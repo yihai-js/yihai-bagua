@@ -6,17 +6,17 @@
  * 提供球面坐标与直角坐标转换、黄道与赤道坐标转换等功能
  */
 
-import { PI2 } from './constants';
+import { PI2 } from './constants'
 
 /**
  * 球面坐标 [经度, 纬度, 距离]
  */
-export type SphericalCoord = [number, number, number];
+export type SphericalCoord = [number, number, number]
 
 /**
  * 直角坐标 [x, y, z]
  */
-export type RectangularCoord = [number, number, number];
+export type RectangularCoord = [number, number, number]
 
 /**
  * 将角度规范化到 0-2π 范围
@@ -26,11 +26,11 @@ export type RectangularCoord = [number, number, number];
  * @returns 规范化后的角度 (0 到 2π)
  */
 export function normalizeAngle(angle: number): number {
-  let normalizedAngle = angle % PI2;
+  const normalizedAngle = angle % PI2
   if (normalizedAngle < 0) {
-    return normalizedAngle + PI2;
+    return normalizedAngle + PI2
   }
-  return normalizedAngle;
+  return normalizedAngle
 }
 
 /**
@@ -41,14 +41,14 @@ export function normalizeAngle(angle: number): number {
  * @returns 规范化后的角度 (-π 到 π)
  */
 export function normalizeAngleSigned(angle: number): number {
-  let normalizedAngle = angle % PI2;
+  const normalizedAngle = angle % PI2
   if (normalizedAngle <= -Math.PI) {
-    return normalizedAngle + PI2;
+    return normalizedAngle + PI2
   }
   if (normalizedAngle > Math.PI) {
-    return normalizedAngle - PI2;
+    return normalizedAngle - PI2
   }
-  return normalizedAngle;
+  return normalizedAngle
 }
 
 /**
@@ -60,11 +60,11 @@ export function normalizeAngleSigned(angle: number): number {
  * @returns 临界余数
  */
 export function mod2(dividend: number, divisor: number): number {
-  let remainder = (dividend + divisor) % divisor;
+  let remainder = (dividend + divisor) % divisor
   if (remainder > divisor / 2.0) {
-    remainder -= divisor;
+    remainder -= divisor
   }
-  return remainder;
+  return remainder
 }
 
 /**
@@ -75,9 +75,9 @@ export function mod2(dividend: number, divisor: number): number {
  * @returns 直角坐标 [x, y, z]
  */
 export function sphericalToRectangular(coord: SphericalCoord): RectangularCoord {
-  const [lambda, beta, r] = coord;
-  const cosBeta = Math.cos(beta);
-  return [r * cosBeta * Math.cos(lambda), r * cosBeta * Math.sin(lambda), r * Math.sin(beta)];
+  const [lambda, beta, r] = coord
+  const cosBeta = Math.cos(beta)
+  return [r * cosBeta * Math.cos(lambda), r * cosBeta * Math.sin(lambda), r * Math.sin(beta)]
 }
 
 /**
@@ -88,11 +88,11 @@ export function sphericalToRectangular(coord: SphericalCoord): RectangularCoord 
  * @returns 球面坐标 [经度λ, 纬度β, 距离r]
  */
 export function rectangularToSpherical(coord: RectangularCoord): SphericalCoord {
-  const [x, y, z] = coord;
-  const r = Math.sqrt(x * x + y * y + z * z);
-  const beta = Math.asin(z / r);
-  const lambda = normalizeAngle(Math.atan2(y, x));
-  return [lambda, beta, r];
+  const [x, y, z] = coord
+  const r = Math.sqrt(x * x + y * y + z * z)
+  const beta = Math.asin(z / r)
+  const lambda = normalizeAngle(Math.atan2(y, x))
+  return [lambda, beta, r]
 }
 
 /**
@@ -104,19 +104,19 @@ export function rectangularToSpherical(coord: RectangularCoord): SphericalCoord 
  * @returns 旋转后的球面坐标
  */
 export function rotateSpherical(coord: SphericalCoord, epsilon: number): SphericalCoord {
-  const [lambda, beta, r] = coord;
-  const sinE = Math.sin(epsilon);
-  const cosE = Math.cos(epsilon);
-  const sinL = Math.sin(lambda);
-  const cosL = Math.cos(lambda);
-  const sinB = Math.sin(beta);
-  const cosB = Math.cos(beta);
-  const tanB = Math.tan(beta);
+  const [lambda, beta, r] = coord
+  const sinE = Math.sin(epsilon)
+  const cosE = Math.cos(epsilon)
+  const sinL = Math.sin(lambda)
+  const cosL = Math.cos(lambda)
+  const sinB = Math.sin(beta)
+  const cosB = Math.cos(beta)
+  const tanB = Math.tan(beta)
 
-  const newLambda = Math.atan2(sinL * cosE - tanB * sinE, cosL);
-  const newBeta = Math.asin(cosE * sinB + sinE * cosB * sinL);
+  const newLambda = Math.atan2(sinL * cosE - tanB * sinE, cosL)
+  const newBeta = Math.asin(cosE * sinB + sinE * cosB * sinL)
 
-  return [normalizeAngle(newLambda), newBeta, r];
+  return [normalizeAngle(newLambda), newBeta, r]
 }
 
 /**
@@ -127,7 +127,7 @@ export function rotateSpherical(coord: SphericalCoord, epsilon: number): Spheric
  * @returns 赤道坐标 [赤经α, 赤纬δ, 距离r]
  */
 export function eclipticToEquatorial(ecliptic: SphericalCoord, epsilon: number): SphericalCoord {
-  return rotateSpherical(ecliptic, epsilon);
+  return rotateSpherical(ecliptic, epsilon)
 }
 
 /**
@@ -138,7 +138,7 @@ export function eclipticToEquatorial(ecliptic: SphericalCoord, epsilon: number):
  * @returns 黄道坐标 [黄经λ, 黄纬β, 距离r]
  */
 export function equatorialToEcliptic(equatorial: SphericalCoord, epsilon: number): SphericalCoord {
-  return rotateSpherical(equatorial, -epsilon);
+  return rotateSpherical(equatorial, -epsilon)
 }
 
 /**
@@ -155,16 +155,16 @@ export function equatorialToHorizontal(
   equatorial: SphericalCoord,
   longitude: number,
   latitude: number,
-  gst: number
+  gst: number,
 ): SphericalCoord {
-  const [ra, dec, r] = equatorial;
+  const [ra, dec, r] = equatorial
   // 转到相对于地平赤道分点的赤道坐标
-  const localEquatorial: SphericalCoord = [ra + Math.PI / 2 - gst - longitude, dec, r];
+  const localEquatorial: SphericalCoord = [ra + Math.PI / 2 - gst - longitude, dec, r]
   // 旋转到地平坐标系
-  const horizontalCoord = rotateSpherical(localEquatorial, Math.PI / 2 - latitude);
+  const horizontalCoord = rotateSpherical(localEquatorial, Math.PI / 2 - latitude)
   // 调整方位角
-  horizontalCoord[0] = normalizeAngle(-Math.PI / 2 - horizontalCoord[0]);
-  return horizontalCoord;
+  horizontalCoord[0] = normalizeAngle(-Math.PI / 2 - horizontalCoord[0])
+  return horizontalCoord
 }
 
 /**
@@ -180,21 +180,21 @@ export function angularDistance(
   lon1: number,
   lat1: number,
   lon2: number,
-  lat2: number
+  lat2: number,
 ): number {
-  const dLon = normalizeAngleSigned(lon1 - lon2);
-  const dLat = lat1 - lat2;
+  const dLon = normalizeAngleSigned(lon1 - lon2)
+  const dLat = lat1 - lat2
 
   // 对于小角度使用近似公式
   if (Math.abs(dLon) < 1 / 1000 && Math.abs(dLat) < 1 / 1000) {
-    const dLonCorrected = dLon * Math.cos((lat1 + lat2) / 2);
-    return Math.sqrt(dLonCorrected * dLonCorrected + dLat * dLat);
+    const dLonCorrected = dLon * Math.cos((lat1 + lat2) / 2)
+    return Math.sqrt(dLonCorrected * dLonCorrected + dLat * dLat)
   }
 
   // 对于大角度使用球面三角公式
   return Math.acos(
-    Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(dLon)
-  );
+    Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(dLon),
+  )
 }
 
 /**
@@ -207,19 +207,19 @@ export function angularDistance(
  */
 export function heliocentricToGeocentric(
   heliocentric: SphericalCoord,
-  earth: SphericalCoord
+  earth: SphericalCoord,
 ): SphericalCoord {
-  const earthXYZ = sphericalToRectangular(earth);
-  const bodyXYZ = sphericalToRectangular(heliocentric);
+  const earthXYZ = sphericalToRectangular(earth)
+  const bodyXYZ = sphericalToRectangular(heliocentric)
 
   // 平移坐标原点
   const geoXYZ: RectangularCoord = [
     bodyXYZ[0] - earthXYZ[0],
     bodyXYZ[1] - earthXYZ[1],
     bodyXYZ[2] - earthXYZ[2],
-  ];
+  ]
 
-  return rectangularToSpherical(geoXYZ);
+  return rectangularToSpherical(geoXYZ)
 }
 
 /**
@@ -238,8 +238,8 @@ export function parallacticAngle(
   longitude: number,
   latitude: number,
   ra: number,
-  dec: number
+  dec: number,
 ): number {
-  const hourAngle = gst + longitude - ra; // 天体的时角
-  return normalizeAngle(Math.atan2(Math.sin(hourAngle), Math.tan(latitude) * Math.cos(dec) - Math.sin(dec) * Math.cos(hourAngle)));
+  const hourAngle = gst + longitude - ra // 天体的时角
+  return normalizeAngle(Math.atan2(Math.sin(hourAngle), Math.tan(latitude) * Math.cos(dec) - Math.sin(dec) * Math.cos(hourAngle)))
 }

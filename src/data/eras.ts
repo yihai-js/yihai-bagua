@@ -10,17 +10,17 @@
  */
 export interface EraInfo {
   /** 起始公元年 (天文纪年，0年存在) */
-  startYear: number;
+  startYear: number
   /** 使用年数 */
-  duration: number;
+  duration: number
   /** 朝代 */
-  dynasty: string;
+  dynasty: string
   /** 朝号/庙号 */
-  title: string;
+  title: string
   /** 皇帝名 */
-  emperor: string;
+  emperor: string
   /** 年号 */
-  eraName: string;
+  eraName: string
 }
 
 /**
@@ -28,13 +28,13 @@ export interface EraInfo {
  */
 export interface DynastyInfo {
   /** 朝代名称 */
-  name: string;
+  name: string
   /** 起始年 */
-  startYear: number;
+  startYear: number
   /** 终止年 */
-  endYear: number;
+  endYear: number
   /** 都城 */
-  capital?: string;
+  capital?: string
 }
 
 /**
@@ -79,7 +79,7 @@ export const DYNASTIES: readonly DynastyInfo[] = [
   { name: '清', startYear: 1644, endYear: 1911, capital: '北京' },
   { name: '中华民国', startYear: 1912, endYear: 1949, capital: '南京' },
   { name: '中华人民共和国', startYear: 1949, endYear: 9999, capital: '北京' },
-];
+]
 
 /**
  * 部分重要年号数据 (精简版)
@@ -334,33 +334,33 @@ const ERA_DATA_RAW = [
   [1909, 3, '清', '宣统帝', '溥仪', '宣统'],
   // 民国
   [1912, 38, '中华民国', '', '', '民国'],
-];
+]
 
 /**
  * 解析年号数据
  */
 function parseEraData(): EraInfo[] {
-  return ERA_DATA_RAW.map((item) => ({
+  return ERA_DATA_RAW.map(item => ({
     startYear: item[0] as number,
     duration: item[1] as number,
     dynasty: item[2] as string,
     title: item[3] as string,
     emperor: item[4] as string,
     eraName: item[5] as string,
-  }));
+  }))
 }
 
 // 缓存解析后的年号数据
-let eraDataCache: EraInfo[] | null = null;
+let eraDataCache: EraInfo[] | null = null
 
 /**
  * 获取所有年号数据
  */
 export function getEraData(): EraInfo[] {
   if (!eraDataCache) {
-    eraDataCache = parseEraData();
+    eraDataCache = parseEraData()
   }
-  return eraDataCache;
+  return eraDataCache
 }
 
 /**
@@ -369,16 +369,16 @@ export function getEraData(): EraInfo[] {
  * @returns 匹配的年号信息列表 (可能有多个，如南北朝并立)
  */
 export function findEraByYear(year: number): EraInfo[] {
-  const eras = getEraData();
-  const results: EraInfo[] = [];
+  const eras = getEraData()
+  const results: EraInfo[] = []
 
   for (const era of eras) {
     if (year >= era.startYear && year < era.startYear + era.duration) {
-      results.push(era);
+      results.push(era)
     }
   }
 
-  return results;
+  return results
 }
 
 /**
@@ -387,8 +387,8 @@ export function findEraByYear(year: number): EraInfo[] {
  * @returns 匹配的年号信息列表
  */
 export function findEraByName(eraName: string): EraInfo[] {
-  const eras = getEraData();
-  return eras.filter((era) => era.eraName.includes(eraName) || eraName.includes(era.eraName));
+  const eras = getEraData()
+  return eras.filter(era => era.eraName.includes(eraName) || eraName.includes(era.eraName))
 }
 
 /**
@@ -397,8 +397,8 @@ export function findEraByName(eraName: string): EraInfo[] {
  * @returns 该朝代的所有年号
  */
 export function findErasByDynasty(dynasty: string): EraInfo[] {
-  const eras = getEraData();
-  return eras.filter((era) => era.dynasty.includes(dynasty));
+  const eras = getEraData()
+  return eras.filter(era => era.dynasty.includes(dynasty))
 }
 
 /**
@@ -407,36 +407,40 @@ export function findErasByDynasty(dynasty: string): EraInfo[] {
  * @returns 年号纪年字符串 (如 "清·乾隆五十年")
  */
 export function yearToEraString(year: number): string {
-  const eras = findEraByYear(year);
+  const eras = findEraByYear(year)
   if (eras.length === 0) {
-    return `公元${year}年`;
+    return `公元${year}年`
   }
 
-  const era = eras[0]; // 取第一个匹配的年号
-  const eraYear = year - era.startYear + 1;
+  const era = eras[0] // 取第一个匹配的年号
+  const eraYear = year - era.startYear + 1
 
-  const numCn = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+  const numCn = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 
   // 转换为中文数字
-  let yearStr: string;
+  let yearStr: string
   if (eraYear === 1) {
-    yearStr = '元';
-  } else if (eraYear <= 10) {
-    yearStr = numCn[eraYear];
-  } else if (eraYear < 20) {
-    yearStr = '十' + (eraYear % 10 === 0 ? '' : numCn[eraYear % 10]);
-  } else if (eraYear < 100) {
-    const tens = Math.floor(eraYear / 10);
-    const ones = eraYear % 10;
-    yearStr = numCn[tens] + '十' + (ones === 0 ? '' : numCn[ones]);
-  } else {
-    yearStr = String(eraYear);
+    yearStr = '元'
+  }
+  else if (eraYear <= 10) {
+    yearStr = numCn[eraYear]
+  }
+  else if (eraYear < 20) {
+    yearStr = `十${eraYear % 10 === 0 ? '' : numCn[eraYear % 10]}`
+  }
+  else if (eraYear < 100) {
+    const tens = Math.floor(eraYear / 10)
+    const ones = eraYear % 10
+    yearStr = `${numCn[tens]}十${ones === 0 ? '' : numCn[ones]}`
+  }
+  else {
+    yearStr = String(eraYear)
   }
 
-  const dynastyPart = era.dynasty ? era.dynasty + '·' : '';
-  const eraPart = era.eraName || era.emperor || era.title;
+  const dynastyPart = era.dynasty ? `${era.dynasty}·` : ''
+  const eraPart = era.eraName || era.emperor || era.title
 
-  return `${dynastyPart}${eraPart}${yearStr}年`;
+  return `${dynastyPart}${eraPart}${yearStr}年`
 }
 
 /**
@@ -447,8 +451,8 @@ export function yearToEraString(year: number): string {
 export function getDynastyByYear(year: number): DynastyInfo | null {
   for (const dynasty of DYNASTIES) {
     if (year >= dynasty.startYear && year <= dynasty.endYear) {
-      return dynasty;
+      return dynasty
     }
   }
-  return null;
+  return null
 }

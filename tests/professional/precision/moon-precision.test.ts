@@ -11,41 +11,41 @@
  * J2000 = 2000年1月1日12时 (JD 2451545.0)
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest'
+import { J2000, PI2, RAD } from '../../../src/core/constants'
+import { gregorianToJD } from '../../../src/core/julian'
 import {
-  calculateMoonLongitude,
-  calculateMoonLatitude,
-  calculateMoonDistance,
-  calculateMoonApparentLongitude,
-  calculateMoonApparentCoord,
   calculateMoonAngularRadius,
-  MOON_MEAN_DISTANCE,
+  calculateMoonApparentCoord,
+  calculateMoonApparentLongitude,
+  calculateMoonDistance,
+  calculateMoonLatitude,
+  calculateMoonLongitude,
   MOON_MEAN_ANGULAR_RADIUS,
-} from '../../../src/ephemeris/moon';
-import { gregorianToJD } from '../../../src/core/julian';
-import { J2000, RAD, PI2 } from '../../../src/core/constants';
+  MOON_MEAN_DISTANCE,
+} from '../../../src/ephemeris/moon'
 
 // ============================================================================
 // 常量定义 - 消除魔数
 // ============================================================================
 
 /** 弧度转角秒 */
-const RAD_TO_ARCSEC = (180 * 3600) / Math.PI;
+const RAD_TO_ARCSEC = (180 * 3600) / Math.PI
 
 /** 弧度转度 */
-const RAD_TO_DEG = 180 / Math.PI;
+const RAD_TO_DEG = 180 / Math.PI
 
 /** 度转弧度 */
-const DEG_TO_RAD = Math.PI / 180;
+const DEG_TO_RAD = Math.PI / 180
 
 /** 儒略世纪天数 */
-const JULIAN_CENTURY_DAYS = 36525;
+const JULIAN_CENTURY_DAYS = 36525
 
 /** J2000 纪元的儒略世纪数 */
-const J2000_T = 0;
+const J2000_T = 0
 
 /** 世纪转年数 */
-const CENTURY_TO_YEARS = 100;
+const CENTURY_TO_YEARS = 100
 
 // ============================================================================
 // 精度要求定义 - 来自 sm1.htm 第一章
@@ -64,11 +64,11 @@ const MOON_PRECISION_REQUIREMENTS = {
   longitudePrecision: 0.5,
   /** 黄纬理论精度（角秒）- ELP/MPP02 标称精度 */
   latitudePrecision: 0.5,
-  /** 距离精度要求（千米）*/
+  /** 距离精度要求（千米） */
   distancePrecision: 1,
-  /** J2000.0 时间最大偏移（世纪数）*/
+  /** J2000.0 时间最大偏移（世纪数） */
   maxCenturyOffset: 30,
-} as const;
+} as const
 
 /**
  * 参考值比对测试的容差（角秒）
@@ -80,7 +80,7 @@ const MOON_PRECISION_REQUIREMENTS = {
  *
  * 60 角秒 = 1 角分，足以验证计算的基本正确性
  */
-const REFERENCE_TOLERANCE_ARCSEC = 60;
+const REFERENCE_TOLERANCE_ARCSEC = 60
 
 /**
  * 距离参考值比对的容差（千米）
@@ -88,25 +88,25 @@ const REFERENCE_TOLERANCE_ARCSEC = 60;
  * ELP/MPP02 实现与参考值可能来自不同版本或计算参数，
  * 实测误差约 145 千米，设置允许误差为 200 千米
  */
-const REFERENCE_TOLERANCE_DISTANCE_KM = 200;
+const REFERENCE_TOLERANCE_DISTANCE_KM = 200
 
 /**
  * 与 DE405/406 比较的精度要求
  * 数据来源：sm1.htm 第一章
  */
 const DE_COMPARISON_PRECISION = {
-  /** 几千年范围内最大误差（角秒）*/
+  /** 几千年范围内最大误差（角秒） */
   millenniaRangeError: 4,
-  /** 几百年范围内最大误差（毫角秒）*/
+  /** 几百年范围内最大误差（毫角秒） */
   centuriesRangeMasError: 3,
-} as const;
+} as const
 
 /**
  * 月球视半径公式常数
  * 数据来源：sm1.htm 第一章
  * 公式：mr = MOON_RADIUS_CONSTANT / d 角秒（d为地月距离千米）
  */
-const MOON_RADIUS_CONSTANT = 358473400;
+const MOON_RADIUS_CONSTANT = 358473400
 
 // ============================================================================
 // 参考值定义 - 来自 sm1.htm 第一章
@@ -126,11 +126,11 @@ const REFERENCE_2008_JAN_6 = {
     seconds: 36.31,
     /** 转换为弧度 */
     get radians(): number {
-      return (this.degrees + this.minutes / 60 + this.seconds / 3600) * DEG_TO_RAD;
+      return (this.degrees + this.minutes / 60 + this.seconds / 3600) * DEG_TO_RAD
     },
     /** 转换为度 */
     get decimalDegrees(): number {
-      return this.degrees + this.minutes / 60 + this.seconds / 3600;
+      return this.degrees + this.minutes / 60 + this.seconds / 3600
     },
   },
   /** 视黄纬：-4°52'14.12" */
@@ -140,36 +140,36 @@ const REFERENCE_2008_JAN_6 = {
     seconds: 14.12,
     /** 转换为弧度 */
     get radians(): number {
-      const absValue =
-        (Math.abs(this.degrees) + this.minutes / 60 + this.seconds / 3600) * DEG_TO_RAD;
-      return this.degrees < 0 ? -absValue : absValue;
+      const absValue
+        = (Math.abs(this.degrees) + this.minutes / 60 + this.seconds / 3600) * DEG_TO_RAD
+      return this.degrees < 0 ? -absValue : absValue
     },
     /** 转换为度 */
     get decimalDegrees(): number {
-      const absValue = Math.abs(this.degrees) + this.minutes / 60 + this.seconds / 3600;
-      return this.degrees < 0 ? -absValue : absValue;
+      const absValue = Math.abs(this.degrees) + this.minutes / 60 + this.seconds / 3600
+      return this.degrees < 0 ? -absValue : absValue
     },
   },
-  /** 距离（千米）*/
+  /** 距离（千米） */
   distance: 401817.73,
-} as const;
+} as const
 
 /**
  * 月球轨道参数范围
  * 用于验证计算结果的合理性
  */
 const MOON_ORBITAL_RANGE = {
-  /** 最小距离（近地点，千米）*/
+  /** 最小距离（近地点，千米） */
   minDistance: 356500,
-  /** 最大距离（远地点，千米）*/
+  /** 最大距离（远地点，千米） */
   maxDistance: 406700,
   /** 最大黄纬绝对值（度）- 轨道倾角约 5.145° */
   maxLatitude: 5.3,
-  /** 月球平均角速度（度/天）*/
+  /** 月球平均角速度（度/天） */
   meanDailyMotion: 13.2,
-  /** 轨道周期（天）*/
+  /** 轨道周期（天） */
   orbitalPeriod: 27.32,
-} as const;
+} as const
 
 // ============================================================================
 // 辅助函数
@@ -181,7 +181,7 @@ const MOON_ORBITAL_RANGE = {
  * @returns 儒略世纪数
  */
 function yearToJulianCentury(year: number): number {
-  return (year - 2000) / CENTURY_TO_YEARS;
+  return (year - 2000) / CENTURY_TO_YEARS
 }
 
 /**
@@ -192,8 +192,8 @@ function yearToJulianCentury(year: number): number {
  * @returns 儒略世纪数
  */
 function dateToJulianCentury(year: number, month: number, day: number): number {
-  const jd = gregorianToJD(year, month, day);
-  return (jd - J2000) / JULIAN_CENTURY_DAYS;
+  const jd = gregorianToJD(year, month, day)
+  return (jd - J2000) / JULIAN_CENTURY_DAYS
 }
 
 /**
@@ -203,10 +203,10 @@ function dateToJulianCentury(year: number, month: number, day: number): number {
  * @returns 最小角度差（弧度）
  */
 function angleDifference(angle1: number, angle2: number): number {
-  let diff = angle1 - angle2;
-  while (diff > Math.PI) diff -= PI2;
-  while (diff < -Math.PI) diff += PI2;
-  return Math.abs(diff);
+  let diff = angle1 - angle2
+  while (diff > Math.PI) diff -= PI2
+  while (diff < -Math.PI) diff += PI2
+  return Math.abs(diff)
 }
 
 /**
@@ -215,7 +215,7 @@ function angleDifference(angle1: number, angle2: number): number {
  * @returns 视半径（角秒）
  */
 function calculateMoonRadiusByFormula(distance: number): number {
-  return MOON_RADIUS_CONSTANT / distance;
+  return MOON_RADIUS_CONSTANT / distance
 }
 
 /**
@@ -224,9 +224,9 @@ function calculateMoonRadiusByFormula(distance: number): number {
  */
 function expectValidCoord(coord: number[]): void {
   coord.forEach((v) => {
-    expect(isNaN(v)).toBe(false);
-    expect(isFinite(v)).toBe(true);
-  });
+    expect(Number.isNaN(v)).toBe(false)
+    expect(Number.isFinite(v)).toBe(true)
+  })
 }
 
 // ============================================================================
@@ -242,62 +242,62 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
     const testT = dateToJulianCentury(
       REFERENCE_2008_JAN_6.date.year,
       REFERENCE_2008_JAN_6.date.month,
-      REFERENCE_2008_JAN_6.date.day + REFERENCE_2008_JAN_6.date.hour / 24
-    );
+      REFERENCE_2008_JAN_6.date.day + REFERENCE_2008_JAN_6.date.hour / 24,
+    )
 
     it('计算的儒略世纪数应正确', () => {
       // 2008年1月6日距 J2000 约 8 年
-      expect(testT).toBeGreaterThan(0.07);
-      expect(testT).toBeLessThan(0.09);
-    });
+      expect(testT).toBeGreaterThan(0.07)
+      expect(testT).toBeLessThan(0.09)
+    })
 
     it('视黄经误差应小于精度要求', () => {
-      const coord = calculateMoonApparentCoord(testT, -1);
-      const calculatedLon = coord[0];
-      const referenceLon = REFERENCE_2008_JAN_6.apparentLongitude.radians;
+      const coord = calculateMoonApparentCoord(testT, -1)
+      const calculatedLon = coord[0]
+      const referenceLon = REFERENCE_2008_JAN_6.apparentLongitude.radians
 
-      const diff = angleDifference(calculatedLon, referenceLon);
-      const diffArcsec = diff * RAD_TO_ARCSEC;
+      const diff = angleDifference(calculatedLon, referenceLon)
+      const diffArcsec = diff * RAD_TO_ARCSEC
 
-      expect(diffArcsec).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC);
-    });
+      expect(diffArcsec).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC)
+    })
 
     it('视黄纬误差应小于精度要求', () => {
-      const coord = calculateMoonApparentCoord(testT, -1);
-      const calculatedLat = coord[1];
-      const referenceLat = REFERENCE_2008_JAN_6.apparentLatitude.radians;
+      const coord = calculateMoonApparentCoord(testT, -1)
+      const calculatedLat = coord[1]
+      const referenceLat = REFERENCE_2008_JAN_6.apparentLatitude.radians
 
-      const diff = Math.abs(calculatedLat - referenceLat);
-      const diffArcsec = diff * RAD_TO_ARCSEC;
+      const diff = Math.abs(calculatedLat - referenceLat)
+      const diffArcsec = diff * RAD_TO_ARCSEC
 
-      expect(diffArcsec).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC);
-    });
+      expect(diffArcsec).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC)
+    })
 
     it('距离误差应小于精度要求', () => {
-      const coord = calculateMoonApparentCoord(testT, -1);
-      const calculatedDist = coord[2];
-      const referenceDist = REFERENCE_2008_JAN_6.distance;
+      const coord = calculateMoonApparentCoord(testT, -1)
+      const calculatedDist = coord[2]
+      const referenceDist = REFERENCE_2008_JAN_6.distance
 
-      const diff = Math.abs(calculatedDist - referenceDist);
+      const diff = Math.abs(calculatedDist - referenceDist)
 
-      expect(diff).toBeLessThan(REFERENCE_TOLERANCE_DISTANCE_KM);
-    });
+      expect(diff).toBeLessThan(REFERENCE_TOLERANCE_DISTANCE_KM)
+    })
 
     it('输出详细比对信息', () => {
-      const coord = calculateMoonApparentCoord(testT, -1);
+      const coord = calculateMoonApparentCoord(testT, -1)
 
-      const lonDiff =
-        angleDifference(coord[0], REFERENCE_2008_JAN_6.apparentLongitude.radians) * RAD_TO_ARCSEC;
-      const latDiff =
-        Math.abs(coord[1] - REFERENCE_2008_JAN_6.apparentLatitude.radians) * RAD_TO_ARCSEC;
-      const distDiff = Math.abs(coord[2] - REFERENCE_2008_JAN_6.distance);
+      const lonDiff
+        = angleDifference(coord[0], REFERENCE_2008_JAN_6.apparentLongitude.radians) * RAD_TO_ARCSEC
+      const latDiff
+        = Math.abs(coord[1] - REFERENCE_2008_JAN_6.apparentLatitude.radians) * RAD_TO_ARCSEC
+      const distDiff = Math.abs(coord[2] - REFERENCE_2008_JAN_6.distance)
 
       // 验证误差在容差范围内
-      expect(lonDiff).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC);
-      expect(latDiff).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC);
-      expect(distDiff).toBeLessThan(REFERENCE_TOLERANCE_DISTANCE_KM);
-    });
-  });
+      expect(lonDiff).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC)
+      expect(latDiff).toBeLessThan(REFERENCE_TOLERANCE_ARCSEC)
+      expect(distDiff).toBeLessThan(REFERENCE_TOLERANCE_DISTANCE_KM)
+    })
+  })
 
   describe('精度范围测试 - J2000 +/- 30 世纪', () => {
     /**
@@ -317,63 +317,63 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
       { t: -20, desc: 'J2000-2000年 (公元前1年)' },
       { t: 30, desc: 'J2000+3000年 (公元5000年)' },
       { t: -30, desc: 'J2000-3000年 (公元前1001年)' },
-    ];
+    ]
 
     describe('数值有效性测试', () => {
       testCenturies.forEach(({ t, desc }) => {
         it(`${desc}: 计算结果应有效（无 NaN 或 Infinity）`, () => {
-          const coord = calculateMoonApparentCoord(t, -1);
-          expectValidCoord(coord);
-        });
-      });
-    });
+          const coord = calculateMoonApparentCoord(t, -1)
+          expectValidCoord(coord)
+        })
+      })
+    })
 
     describe('坐标范围测试', () => {
       testCenturies.forEach(({ t, desc }) => {
         it(`${desc}: 黄经应在 [0, 2*PI) 范围内`, () => {
-          const lon = calculateMoonApparentLongitude(t, -1);
-          expect(lon).toBeGreaterThanOrEqual(0);
-          expect(lon).toBeLessThan(PI2);
-        });
+          const lon = calculateMoonApparentLongitude(t, -1)
+          expect(lon).toBeGreaterThanOrEqual(0)
+          expect(lon).toBeLessThan(PI2)
+        })
 
         it(`${desc}: 黄纬应在合理范围内`, () => {
-          const coord = calculateMoonApparentCoord(t, -1);
-          const latDeg = Math.abs(coord[1]) * RAD_TO_DEG;
+          const coord = calculateMoonApparentCoord(t, -1)
+          const latDeg = Math.abs(coord[1]) * RAD_TO_DEG
           // 月球黄纬最大约 5.3 度，允许一定裕度
-          expect(latDeg).toBeLessThan(MOON_ORBITAL_RANGE.maxLatitude * 1.5);
-        });
+          expect(latDeg).toBeLessThan(MOON_ORBITAL_RANGE.maxLatitude * 1.5)
+        })
 
         it(`${desc}: 距离应在合理范围内`, () => {
-          const coord = calculateMoonApparentCoord(t, -1);
+          const coord = calculateMoonApparentCoord(t, -1)
           // 距离应在近地点和远地点之间，允许一定裕度
-          expect(coord[2]).toBeGreaterThan(MOON_ORBITAL_RANGE.minDistance * 0.9);
-          expect(coord[2]).toBeLessThan(MOON_ORBITAL_RANGE.maxDistance * 1.1);
-        });
-      });
-    });
+          expect(coord[2]).toBeGreaterThan(MOON_ORBITAL_RANGE.minDistance * 0.9)
+          expect(coord[2]).toBeLessThan(MOON_ORBITAL_RANGE.maxDistance * 1.1)
+        })
+      })
+    })
 
     describe('边界世纪测试', () => {
-      it('J2000 +30 世纪边界处计算应成功', () => {
+      it('j2000 +30 世纪边界处计算应成功', () => {
         const coord = calculateMoonApparentCoord(
           MOON_PRECISION_REQUIREMENTS.maxCenturyOffset,
-          -1
-        );
-        expect(coord).toBeDefined();
-        expect(coord.length).toBe(3);
-        expectValidCoord(coord);
-      });
+          -1,
+        )
+        expect(coord).toBeDefined()
+        expect(coord.length).toBe(3)
+        expectValidCoord(coord)
+      })
 
-      it('J2000 -30 世纪边界处计算应成功', () => {
+      it('j2000 -30 世纪边界处计算应成功', () => {
         const coord = calculateMoonApparentCoord(
           -MOON_PRECISION_REQUIREMENTS.maxCenturyOffset,
-          -1
-        );
-        expect(coord).toBeDefined();
-        expect(coord.length).toBe(3);
-        expectValidCoord(coord);
-      });
-    });
-  });
+          -1,
+        )
+        expect(coord).toBeDefined()
+        expect(coord.length).toBe(3)
+        expectValidCoord(coord)
+      })
+    })
+  })
 
   describe('月球视半径测试', () => {
     /**
@@ -384,65 +384,65 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
 
     it('sm1.htm 公式与库函数应给出一致结果', () => {
       // 使用平均距离测试
-      const distance = MOON_MEAN_DISTANCE;
+      const distance = MOON_MEAN_DISTANCE
 
       // 使用 sm1.htm 公式计算
-      const radiusByFormula = calculateMoonRadiusByFormula(distance);
+      const radiusByFormula = calculateMoonRadiusByFormula(distance)
 
       // 使用库函数计算（返回弧度，转换为角秒）
-      const radiusByLib = calculateMoonAngularRadius(distance) * RAD;
+      const radiusByLib = calculateMoonAngularRadius(distance) * RAD
 
       // 两者应接近（允许一定误差，因为公式可能有细微差异）
-      const diff = Math.abs(radiusByFormula - radiusByLib);
+      const diff = Math.abs(radiusByFormula - radiusByLib)
       // 允许约 2 角秒的误差
-      expect(diff).toBeLessThan(2);
-    });
+      expect(diff).toBeLessThan(2)
+    })
 
     it('近地点距离时视半径应更大', () => {
-      const nearRadius = calculateMoonAngularRadius(MOON_ORBITAL_RANGE.minDistance);
-      const farRadius = calculateMoonAngularRadius(MOON_ORBITAL_RANGE.maxDistance);
+      const nearRadius = calculateMoonAngularRadius(MOON_ORBITAL_RANGE.minDistance)
+      const farRadius = calculateMoonAngularRadius(MOON_ORBITAL_RANGE.maxDistance)
 
-      expect(nearRadius).toBeGreaterThan(farRadius);
+      expect(nearRadius).toBeGreaterThan(farRadius)
 
       // 近地点视半径约 17.1 角分
-      const nearRadiusArcmin = (nearRadius * RAD) / 60;
-      expect(nearRadiusArcmin).toBeGreaterThan(16);
-      expect(nearRadiusArcmin).toBeLessThan(18);
+      const nearRadiusArcmin = (nearRadius * RAD) / 60
+      expect(nearRadiusArcmin).toBeGreaterThan(16)
+      expect(nearRadiusArcmin).toBeLessThan(18)
 
       // 远地点视半径约 14.7 角分
-      const farRadiusArcmin = (farRadius * RAD) / 60;
-      expect(farRadiusArcmin).toBeGreaterThan(14);
-      expect(farRadiusArcmin).toBeLessThan(16);
-    });
+      const farRadiusArcmin = (farRadius * RAD) / 60
+      expect(farRadiusArcmin).toBeGreaterThan(14)
+      expect(farRadiusArcmin).toBeLessThan(16)
+    })
 
     it('平均距离时视半径约为 15.5 角分', () => {
-      const radius = calculateMoonAngularRadius(MOON_MEAN_DISTANCE);
-      const radiusArcmin = (radius * RAD) / 60;
+      const radius = calculateMoonAngularRadius(MOON_MEAN_DISTANCE)
+      const radiusArcmin = (radius * RAD) / 60
 
       // 平均视半径约 15.5 角分
-      expect(radiusArcmin).toBeGreaterThan(15);
-      expect(radiusArcmin).toBeLessThan(16);
-    });
+      expect(radiusArcmin).toBeGreaterThan(15)
+      expect(radiusArcmin).toBeLessThan(16)
+    })
 
     it('sm1.htm 公式在不同距离下应给出合理结果', () => {
       const testDistances = [
         MOON_ORBITAL_RANGE.minDistance, // 近地点
         MOON_MEAN_DISTANCE, // 平均距离
         MOON_ORBITAL_RANGE.maxDistance, // 远地点
-      ];
+      ]
 
       testDistances.forEach((distance) => {
-        const radius = calculateMoonRadiusByFormula(distance);
+        const radius = calculateMoonRadiusByFormula(distance)
 
         // 视半径应在合理范围内（约 14-17 角分 = 840-1020 角秒）
-        expect(radius).toBeGreaterThan(840);
-        expect(radius).toBeLessThan(1020);
+        expect(radius).toBeGreaterThan(840)
+        expect(radius).toBeLessThan(1020)
 
         // 视半径与距离成反比
-        expect(radius * distance).toBeCloseTo(MOON_RADIUS_CONSTANT, -2);
-      });
-    });
-  });
+        expect(radius * distance).toBeCloseTo(MOON_RADIUS_CONSTANT, -2)
+      })
+    })
+  })
 
   describe('连续性测试 - 相邻时刻计算结果连续', () => {
     /**
@@ -457,97 +457,97 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
       MEDIUM: 10 / JULIAN_CENTURY_DAYS,
       /** 粗糙步长 - 约 100 天 */
       COARSE: 100 / JULIAN_CENTURY_DAYS,
-    };
+    }
 
     describe('精细时间步长连续性（约1天）', () => {
       it('连续1天的黄经计算结果应平滑', () => {
-        const dt = TIME_STEPS.FINE;
-        const numSteps = 10;
-        let prevLon = calculateMoonApparentLongitude(J2000_T, -1);
+        const dt = TIME_STEPS.FINE
+        const numSteps = 10
+        let prevLon = calculateMoonApparentLongitude(J2000_T, -1)
 
         for (let i = 1; i <= numSteps; i++) {
-          const t = J2000_T + i * dt;
-          const lon = calculateMoonApparentLongitude(t, -1);
+          const t = J2000_T + i * dt
+          const lon = calculateMoonApparentLongitude(t, -1)
 
           // 月球每天移动约 13 度 = 0.227 弧度
-          const lonDiff = angleDifference(lon, prevLon);
-          expect(lonDiff).toBeLessThan(0.3); // 约 17 度
+          const lonDiff = angleDifference(lon, prevLon)
+          expect(lonDiff).toBeLessThan(0.3) // 约 17 度
 
-          prevLon = lon;
+          prevLon = lon
         }
-      });
+      })
 
       it('连续1天的坐标计算结果应平滑', () => {
-        const dt = TIME_STEPS.FINE;
-        const numSteps = 10;
-        let prevCoord = calculateMoonApparentCoord(J2000_T, -1);
+        const dt = TIME_STEPS.FINE
+        const numSteps = 10
+        let prevCoord = calculateMoonApparentCoord(J2000_T, -1)
 
         for (let i = 1; i <= numSteps; i++) {
-          const t = J2000_T + i * dt;
-          const coord = calculateMoonApparentCoord(t, -1);
+          const t = J2000_T + i * dt
+          const coord = calculateMoonApparentCoord(t, -1)
 
           // 黄经变化
-          const lonDiff = angleDifference(coord[0], prevCoord[0]);
-          expect(lonDiff).toBeLessThan(0.3);
+          const lonDiff = angleDifference(coord[0], prevCoord[0])
+          expect(lonDiff).toBeLessThan(0.3)
 
           // 黄纬变化应连续
-          const latDiff = Math.abs(coord[1] - prevCoord[1]);
-          expect(latDiff).toBeLessThan(0.02); // 约 1 度
+          const latDiff = Math.abs(coord[1] - prevCoord[1])
+          expect(latDiff).toBeLessThan(0.02) // 约 1 度
 
           // 距离变化应连续
-          const distDiff = Math.abs(coord[2] - prevCoord[2]);
-          expect(distDiff).toBeLessThan(5000); // 5000 千米
+          const distDiff = Math.abs(coord[2] - prevCoord[2])
+          expect(distDiff).toBeLessThan(5000) // 5000 千米
 
-          prevCoord = coord;
+          prevCoord = coord
         }
-      });
-    });
+      })
+    })
 
     describe('中等时间步长连续性（约10天）', () => {
       it('连续10天的坐标计算结果应平滑', () => {
-        const dt = TIME_STEPS.MEDIUM;
-        const numSteps = 10;
-        let prevCoord = calculateMoonApparentCoord(J2000_T, -1);
+        const dt = TIME_STEPS.MEDIUM
+        const numSteps = 10
+        let prevCoord = calculateMoonApparentCoord(J2000_T, -1)
 
         for (let i = 1; i <= numSteps; i++) {
-          const t = J2000_T + i * dt;
-          const coord = calculateMoonApparentCoord(t, -1);
+          const t = J2000_T + i * dt
+          const coord = calculateMoonApparentCoord(t, -1)
 
           // 10天内月球可移动约 130 度
-          const lonDiff = angleDifference(coord[0], prevCoord[0]);
-          expect(lonDiff).toBeLessThan(Math.PI); // 小于 180 度
+          const lonDiff = angleDifference(coord[0], prevCoord[0])
+          expect(lonDiff).toBeLessThan(Math.PI) // 小于 180 度
 
           // 距离变化
-          const distDiff = Math.abs(coord[2] - prevCoord[2]);
-          expect(distDiff).toBeLessThan(50000); // 50000 千米
+          const distDiff = Math.abs(coord[2] - prevCoord[2])
+          expect(distDiff).toBeLessThan(50000) // 50000 千米
 
-          prevCoord = coord;
+          prevCoord = coord
         }
-      });
-    });
+      })
+    })
 
     describe('跨越不同年代的连续性', () => {
       it('从古代到现代的计算应保持连续', () => {
         // 测试从公元前 1000 年到公元 3000 年
-        const startT = yearToJulianCentury(-1000);
-        const endT = yearToJulianCentury(3000);
-        const steps = 40;
-        const dt = (endT - startT) / steps;
+        const startT = yearToJulianCentury(-1000)
+        const endT = yearToJulianCentury(3000)
+        const steps = 40
+        const dt = (endT - startT) / steps
 
         for (let i = 0; i <= steps; i++) {
-          const t = startT + i * dt;
-          const coord = calculateMoonApparentCoord(t, -1);
+          const t = startT + i * dt
+          const coord = calculateMoonApparentCoord(t, -1)
 
           // 基本有效性检查
-          expectValidCoord(coord);
+          expectValidCoord(coord)
 
           // 距离应始终在合理范围
-          expect(coord[2]).toBeGreaterThan(MOON_ORBITAL_RANGE.minDistance * 0.9);
-          expect(coord[2]).toBeLessThan(MOON_ORBITAL_RANGE.maxDistance * 1.1);
+          expect(coord[2]).toBeGreaterThan(MOON_ORBITAL_RANGE.minDistance * 0.9)
+          expect(coord[2]).toBeLessThan(MOON_ORBITAL_RANGE.maxDistance * 1.1)
         }
-      });
-    });
-  });
+      })
+    })
+  })
 
   describe('数值稳定性测试 - 极端时间点无 NaN', () => {
     /**
@@ -555,20 +555,20 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
      */
 
     it('重复计算同一时刻应得到相同结果', () => {
-      const results: number[][] = [];
+      const results: number[][] = []
 
       for (let i = 0; i < 10; i++) {
-        const coord = calculateMoonApparentCoord(J2000_T, -1);
-        results.push([...coord]);
+        const coord = calculateMoonApparentCoord(J2000_T, -1)
+        results.push([...coord])
       }
 
       // 所有结果应完全相同
       for (let i = 1; i < results.length; i++) {
-        expect(results[i][0]).toBe(results[0][0]);
-        expect(results[i][1]).toBe(results[0][1]);
-        expect(results[i][2]).toBe(results[0][2]);
+        expect(results[i][0]).toBe(results[0][0])
+        expect(results[i][1]).toBe(results[0][1])
+        expect(results[i][2]).toBe(results[0][2])
       }
-    });
+    })
 
     it('极端时间值不应产生 NaN', () => {
       const extremeTimes = [
@@ -576,45 +576,45 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
         -30, // 约 -3000 年
         30, // 约 +3000 年
         50, // 约 +5000 年
-      ];
+      ]
 
       extremeTimes.forEach((t) => {
-        const coord = calculateMoonApparentCoord(t, -1);
-        expectValidCoord(coord);
-      });
-    });
+        const coord = calculateMoonApparentCoord(t, -1)
+        expectValidCoord(coord)
+      })
+    })
 
     it('时间值为 0 附近的小扰动不应导致大偏差', () => {
-      const smallPerturbations = [1e-10, 1e-8, 1e-6, 1e-4];
-      const baseCoord = calculateMoonApparentCoord(J2000_T, -1);
+      const smallPerturbations = [1e-10, 1e-8, 1e-6, 1e-4]
+      const baseCoord = calculateMoonApparentCoord(J2000_T, -1)
 
       smallPerturbations.forEach((dt) => {
-        const perturbedCoord = calculateMoonApparentCoord(J2000_T + dt, -1);
+        const perturbedCoord = calculateMoonApparentCoord(J2000_T + dt, -1)
 
         // 微小时间变化应导致微小坐标变化
-        const lonDiff = angleDifference(baseCoord[0], perturbedCoord[0]);
-        const latDiff = Math.abs(baseCoord[1] - perturbedCoord[1]);
-        const distDiff = Math.abs(baseCoord[2] - perturbedCoord[2]);
+        const lonDiff = angleDifference(baseCoord[0], perturbedCoord[0])
+        const latDiff = Math.abs(baseCoord[1] - perturbedCoord[1])
+        const distDiff = Math.abs(baseCoord[2] - perturbedCoord[2])
 
         // 变化应与时间扰动成比例
-        expect(lonDiff).toBeLessThan(dt * 1e7);
-        expect(latDiff).toBeLessThan(dt * 1e6);
-        expect(distDiff).toBeLessThan(dt * 1e10);
-      });
-    });
+        expect(lonDiff).toBeLessThan(dt * 1e7)
+        expect(latDiff).toBeLessThan(dt * 1e6)
+        expect(distDiff).toBeLessThan(dt * 1e10)
+      })
+    })
 
     it('各个单独函数在极端时间也应稳定', () => {
-      const extremeTimes = [-30, 0, 30];
+      const extremeTimes = [-30, 0, 30]
 
       extremeTimes.forEach((t) => {
-        const lon = calculateMoonLongitude(t, -1);
-        const lat = calculateMoonLatitude(t, -1);
-        const dist = calculateMoonDistance(t, -1);
+        const lon = calculateMoonLongitude(t, -1)
+        const lat = calculateMoonLatitude(t, -1)
+        const dist = calculateMoonDistance(t, -1)
 
-        expectValidCoord([lon, lat, dist]);
-      });
-    });
-  });
+        expectValidCoord([lon, lat, dist])
+      })
+    })
+  })
 
   describe('与 DE405/406 比较精度要求', () => {
     /**
@@ -625,46 +625,46 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
      */
 
     it('精度常量应正确定义', () => {
-      expect(DE_COMPARISON_PRECISION.millenniaRangeError).toBe(4);
-      expect(DE_COMPARISON_PRECISION.centuriesRangeMasError).toBe(3);
-    });
+      expect(DE_COMPARISON_PRECISION.millenniaRangeError).toBe(4)
+      expect(DE_COMPARISON_PRECISION.centuriesRangeMasError).toBe(3)
+    })
 
     it('使用不同项数计算应收敛到相似结果', () => {
       // 测试使用不同项数时的收敛性
-      const fullPrecision = calculateMoonApparentCoord(J2000_T, -1);
-      const reducedPrecision = calculateMoonApparentCoord(J2000_T, 100);
+      const fullPrecision = calculateMoonApparentCoord(J2000_T, -1)
+      const reducedPrecision = calculateMoonApparentCoord(J2000_T, 100)
 
       // 黄经差异
-      const lonDiff = angleDifference(fullPrecision[0], reducedPrecision[0]);
-      const lonDiffArcsec = lonDiff * RAD_TO_ARCSEC;
+      const lonDiff = angleDifference(fullPrecision[0], reducedPrecision[0])
+      const lonDiffArcsec = lonDiff * RAD_TO_ARCSEC
 
       // 即使减少项数，精度差异也应在可接受范围内
-      expect(lonDiffArcsec).toBeLessThan(100); // 约 0.03 度
+      expect(lonDiffArcsec).toBeLessThan(100) // 约 0.03 度
 
       // 距离差异
-      const distDiff = Math.abs(fullPrecision[2] - reducedPrecision[2]);
-      expect(distDiff).toBeLessThan(100); // 100 千米
-    });
+      const distDiff = Math.abs(fullPrecision[2] - reducedPrecision[2])
+      expect(distDiff).toBeLessThan(100) // 100 千米
+    })
 
-    it('J2000 附近精度应最高', () => {
+    it('j2000 附近精度应最高', () => {
       // 在 J2000 +/- 1 年范围内测试
-      const testTimes = [-0.01, 0, 0.01]; // 约 +/- 1 年
+      const testTimes = [-0.01, 0, 0.01] // 约 +/- 1 年
 
       testTimes.forEach((t) => {
-        const coord = calculateMoonApparentCoord(t, -1);
+        const coord = calculateMoonApparentCoord(t, -1)
 
         // 所有值应有效
-        expectValidCoord(coord);
+        expectValidCoord(coord)
 
         // 坐标应在合理范围
-        expect(coord[0]).toBeGreaterThanOrEqual(0);
-        expect(coord[0]).toBeLessThan(PI2);
-        expect(Math.abs(coord[1])).toBeLessThan((MOON_ORBITAL_RANGE.maxLatitude * 2) * DEG_TO_RAD);
-        expect(coord[2]).toBeGreaterThan(MOON_ORBITAL_RANGE.minDistance * 0.9);
-        expect(coord[2]).toBeLessThan(MOON_ORBITAL_RANGE.maxDistance * 1.1);
-      });
-    });
-  });
+        expect(coord[0]).toBeGreaterThanOrEqual(0)
+        expect(coord[0]).toBeLessThan(PI2)
+        expect(Math.abs(coord[1])).toBeLessThan((MOON_ORBITAL_RANGE.maxLatitude * 2) * DEG_TO_RAD)
+        expect(coord[2]).toBeGreaterThan(MOON_ORBITAL_RANGE.minDistance * 0.9)
+        expect(coord[2]).toBeLessThan(MOON_ORBITAL_RANGE.maxDistance * 1.1)
+      })
+    })
+  })
 
   describe('轨道周期验证', () => {
     /**
@@ -672,59 +672,60 @@ describe('月球坐标精度验证 - ELP/MPP02 理论', () => {
      */
 
     it('一个轨道周期后黄经应接近原值', () => {
-      const orbitalPeriodCentury = MOON_ORBITAL_RANGE.orbitalPeriod / JULIAN_CENTURY_DAYS;
+      const orbitalPeriodCentury = MOON_ORBITAL_RANGE.orbitalPeriod / JULIAN_CENTURY_DAYS
 
-      const startCoord = calculateMoonApparentCoord(J2000_T, -1);
-      const endCoord = calculateMoonApparentCoord(J2000_T + orbitalPeriodCentury, -1);
+      const startCoord = calculateMoonApparentCoord(J2000_T, -1)
+      const endCoord = calculateMoonApparentCoord(J2000_T + orbitalPeriodCentury, -1)
 
       // 一个轨道周期后黄经应接近原值（允许一定误差，因为还有章动等因素）
-      const lonDiff = angleDifference(startCoord[0], endCoord[0]);
-      const lonDiffDeg = lonDiff * RAD_TO_DEG;
+      const lonDiff = angleDifference(startCoord[0], endCoord[0])
+      const lonDiffDeg = lonDiff * RAD_TO_DEG
 
       // 允许约 30 度的误差（考虑各种扰动）
-      expect(lonDiffDeg).toBeLessThan(30);
-    });
+      expect(lonDiffDeg).toBeLessThan(30)
+    })
 
     it('月球平均运动速度验证', () => {
       // 一天 = 1/36525 世纪
-      const dayInCentury = 1 / JULIAN_CENTURY_DAYS;
+      const dayInCentury = 1 / JULIAN_CENTURY_DAYS
 
-      const lon0 = calculateMoonApparentLongitude(J2000_T, -1);
-      const lon1 = calculateMoonApparentLongitude(J2000_T + dayInCentury, -1);
+      const lon0 = calculateMoonApparentLongitude(J2000_T, -1)
+      const lon1 = calculateMoonApparentLongitude(J2000_T + dayInCentury, -1)
 
       // 计算日运动
-      let dailyMotion = lon1 - lon0;
-      if (dailyMotion < 0) dailyMotion += PI2;
+      let dailyMotion = lon1 - lon0
+      if (dailyMotion < 0)
+        dailyMotion += PI2
 
-      const dailyMotionDeg = dailyMotion * RAD_TO_DEG;
+      const dailyMotionDeg = dailyMotion * RAD_TO_DEG
 
       // 月球平均日运动约 13.2 度
-      expect(dailyMotionDeg).toBeGreaterThan(11);
-      expect(dailyMotionDeg).toBeLessThan(15);
-    });
-  });
+      expect(dailyMotionDeg).toBeGreaterThan(11)
+      expect(dailyMotionDeg).toBeLessThan(15)
+    })
+  })
 
   describe('常量和配置验证', () => {
     it('月球视半径常数应正确', () => {
       // sm1.htm 给出的常数
-      expect(MOON_RADIUS_CONSTANT).toBe(358473400);
-    });
+      expect(MOON_RADIUS_CONSTANT).toBe(358473400)
+    })
 
     it('库中的平均距离和平均视半径应一致', () => {
       // 验证 MOON_MEAN_ANGULAR_RADIUS * MOON_MEAN_DISTANCE 接近 MOON_RADIUS_CONSTANT
-      const product = MOON_MEAN_ANGULAR_RADIUS * MOON_MEAN_DISTANCE;
+      const product = MOON_MEAN_ANGULAR_RADIUS * MOON_MEAN_DISTANCE
 
       // 允许约 1% 的误差
-      const diff = Math.abs(product - MOON_RADIUS_CONSTANT);
-      const relativeError = diff / MOON_RADIUS_CONSTANT;
-      expect(relativeError).toBeLessThan(0.01);
-    });
+      const diff = Math.abs(product - MOON_RADIUS_CONSTANT)
+      const relativeError = diff / MOON_RADIUS_CONSTANT
+      expect(relativeError).toBeLessThan(0.01)
+    })
 
     it('精度要求常量应正确定义', () => {
-      expect(MOON_PRECISION_REQUIREMENTS.longitudePrecision).toBe(0.5);
-      expect(MOON_PRECISION_REQUIREMENTS.latitudePrecision).toBe(0.5);
-      expect(MOON_PRECISION_REQUIREMENTS.distancePrecision).toBe(1);
-      expect(MOON_PRECISION_REQUIREMENTS.maxCenturyOffset).toBe(30);
-    });
-  });
-});
+      expect(MOON_PRECISION_REQUIREMENTS.longitudePrecision).toBe(0.5)
+      expect(MOON_PRECISION_REQUIREMENTS.latitudePrecision).toBe(0.5)
+      expect(MOON_PRECISION_REQUIREMENTS.distancePrecision).toBe(1)
+      expect(MOON_PRECISION_REQUIREMENTS.maxCenturyOffset).toBe(30)
+    })
+  })
+})

@@ -31,70 +31,70 @@ yarn add @yhjs/lunar
 ### 农历日期
 
 ```typescript
-import { LunarDate } from '@yhjs/lunar';
+import { LunarDate } from '@yhjs/lunar'
 
 // 创建农历日期
-const date = new LunarDate(2024, 2, 10);
+const date = new LunarDate(2024, 2, 10)
 
 // 获取信息
-console.log(date.lunarYear());     // 2024
-console.log(date.lunarMonth());    // 1
-console.log(date.lunarDay());      // 1
-console.log(date.ganZhiYear());    // 甲辰
-console.log(date.zodiac());        // 龙
-console.log(date.solarTerm());     // 立春
+console.log(date.lunarYear()) // 2024
+console.log(date.lunarMonth()) // 1
+console.log(date.lunarDay()) // 1
+console.log(date.ganZhiYear()) // 甲辰
+console.log(date.zodiac()) // 龙
+console.log(date.solarTerm()) // 立春
 
 // 格式化
-console.log(date.format('YYYY-MM-DD'));           // 2024-02-10
-console.log(date.format('农历lYYYY年lMM月lDD'));   // 农历2024年正月初一
-console.log(date.format('GY年GM月GD日'));         // 甲辰年丙寅月辛巳日
+console.log(date.format('YYYY-MM-DD')) // 2024-02-10
+console.log(date.format('农历lYYYY年lMM月lDD')) // 农历2024年正月初一
+console.log(date.format('GY年GM月GD日')) // 甲辰年丙寅月辛巳日
 
 // 从农历创建
-const lunar = LunarDate.fromLunar(2024, 1, 1);
+const lunar = LunarDate.fromLunar(2024, 1, 1)
 ```
 
 ### 天文计算
 
 ```typescript
-import { getSunPosition, getSunTimes } from '@yhjs/lunar';
+import { getSunPosition, getSunTimes } from '@yhjs/lunar'
 
 // 太阳位置
 const sun = getSunPosition('2024-06-21 12:00', {
   longitude: 116.4074,
   latitude: 39.9042,
-});
-console.log(sun.azimuth);   // 方位角
-console.log(sun.altitude);  // 高度角
+})
+console.log(sun.azimuth) // 方位角
+console.log(sun.altitude) // 高度角
 
 // 日出日落和晨昏光
 const times = getSunTimes('2024-06-21', {
   longitude: 116.4074,
   latitude: 39.9042,
-});
-console.log(times.rise);              // 日出
-console.log(times.set);               // 日落
-console.log(times.civilDawn);         // 民用晨光始
-console.log(times.civilDusk);         // 民用昏影终
-console.log(times.nauticalDawn);      // 航海晨光始
-console.log(times.astronomicalDawn);  // 天文晨光始
+})
+console.log(times.rise) // 日出
+console.log(times.set) // 日落
+console.log(times.civilDawn) // 民用晨光始
+console.log(times.civilDusk) // 民用昏影终
+console.log(times.nauticalDawn) // 航海晨光始
+console.log(times.astronomicalDawn) // 天文晨光始
 ```
 
 ### 日月食
 
 ```typescript
-import { searchSolarEclipse } from '@yhjs/lunar';
+import { searchSolarEclipse } from '@yhjs/lunar'
 
 // 搜索日食
 const eclipses = searchSolarEclipse({
   startDate: '2024-01-01',
   endDate: '2024-12-31',
-});
+})
 
-eclipses.forEach(e => {
-  console.log(e.type);      // 日食类型
-  console.log(e.maxTime);   // 食甚时刻
-  console.log(e.magnitude); // 食分
-});
+eclipses.forEach((e) => {
+  console.log(e.type) // 日食类型
+  console.log(e.maxTime) // 食甚时刻
+  console.log(e.magnitude) // 食分
+})
 ```
 
 ## 📚 API 文档
@@ -103,71 +103,71 @@ eclipses.forEach(e => {
 
 ```typescript
 // 创建
-new LunarDate(2024, 2, 10)           // 公历创建
-LunarDate.fromLunar(2024, 1, 1)      // 农历创建
-lunar('2024-02-10')                  // 工厂函数
+const date = new LunarDate(2024, 2, 10) // 公历创建
+const lunarDate = LunarDate.fromLunar(2024, 1, 1) // 农历创建
+const d = lunar('2024-02-10') // 工厂函数
 
 // 公历信息
-.year()           // 公历年
-.month()          // 公历月
-.date()           // 公历日
-.day()            // 星期
+  .year() // 公历年
+  .month() // 公历月
+  .date() // 公历日
+  .day() // 星期
 
 // 农历信息
-.lunarYear()      // 农历年
-.lunarMonth()     // 农历月
-.lunarDay()       // 农历日
-.lunarMonthName() // 月名称（正、二、三...）
-.lunarDayName()   // 日名称（初一、初二...）
-.isLeapMonth()    // 是否闰月
+  .lunarYear() // 农历年
+  .lunarMonth() // 农历月
+  .lunarDay() // 农历日
+  .lunarMonthName() // 月名称（正、二、三...）
+  .lunarDayName() // 日名称（初一、初二...）
+  .isLeapMonth() // 是否闰月
 
 // 干支信息
-.ganZhiYear()     // 干支年
-.ganZhiMonth()    // 干支月
-.ganZhiDay()      // 干支日
-.ganZhiHour()     // 干支时
-.zodiac()         // 生肖
-.constellation()  // 星座
+  .ganZhiYear() // 干支年
+  .ganZhiMonth() // 干支月
+  .ganZhiDay() // 干支日
+  .ganZhiHour() // 干支时
+  .zodiac() // 生肖
+  .constellation() // 星座
 
 // 节气与节日
-.solarTerm()      // 当日节气
-.festivals()      // 节日列表
+  .solarTerm() // 当日节气
+  .festivals() // 节日列表
 
 // 日期操作
-.add(1, 'day')    // 添加
-.subtract(1, 'month')  // 减去
-.clone()          // 克隆
-.isBefore(other)  // 比较
-.diff(other, 'day')  // 差值
+  .add(1, 'day') // 添加
+  .subtract(1, 'month') // 减去
+  .clone() // 克隆
+  .isBefore(other) // 比较
+  .diff(other, 'day') // 差值
 
 // 格式化
-.format('YYYY-MM-DD')  // 格式化输出
-.toString()            // 转字符串
-.toDate()              // 转Date对象
+  .format('YYYY-MM-DD') // 格式化输出
+  .toString() // 转字符串
+  .toDate() // 转Date对象
 ```
 
 ### 天文接口
 
 ```typescript
 // 位置计算
-getSunPosition(date, location)     // 太阳位置
-getMoonPosition(date, location)    // 月球位置
-getPlanetPosition(planet, date)    // 行星位置
+getSunPosition(date, location) // 太阳位置
+getMoonPosition(date, location) // 月球位置
+getPlanetPosition(planet, date) // 行星位置
 
 // 升降时刻
-getSunTimes(date, location)        // 日出日落+晨昏光
-getMoonTimes(date, location)       // 月升月落
+getSunTimes(date, location) // 日出日落+晨昏光
+getMoonTimes(date, location) // 月升月落
 
 // 月相与节气
-getMoonPhase(date)                 // 月相
-getSolarTerms(year)                // 某年节气
+getMoonPhase(date) // 月相
+getSolarTerms(year) // 某年节气
 ```
 
 ### 日月食接口
 
 ```typescript
-searchSolarEclipse(options)  // 搜索日食
-searchLunarEclipse(options)  // 搜索月食
+searchSolarEclipse(options) // 搜索日食
+searchLunarEclipse(options) // 搜索月食
 ```
 
 ## 📊 性能

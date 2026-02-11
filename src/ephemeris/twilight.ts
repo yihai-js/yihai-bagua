@@ -20,22 +20,23 @@
  * - 昏影终 (Dusk)：黄昏结束，太阳降到指定角度以下
  */
 
-import { calculateSunRiseTransitSet, HorizonType, RiseTransitSetResult } from './rise-transit-set';
+import type { RiseTransitSetResult } from './rise-transit-set'
+import { calculateSunRiseTransitSet, HorizonType } from './rise-transit-set'
 
 /**
  * 晨昏光类型（重新导出以方便使用）
  * 与 HorizonType 相同，但排除 Standard 类型
  */
-export { HorizonType as TwilightType };
+export { HorizonType as TwilightType }
 
 /**
  * 晨昏光时刻
  */
 export interface TwilightTimes {
   /** 晨光始（黎明开始） - Dawn */
-  dawn: number | null;
+  dawn: number | null
   /** 昏影终（黄昏结束） - Dusk */
-  dusk: number | null;
+  dusk: number | null
 }
 
 /**
@@ -50,13 +51,13 @@ function extractTwilightTimes(result: RiseTransitSetResult): TwilightTimes {
     return {
       dawn: null,
       dusk: null,
-    };
+    }
   }
 
   return {
     dawn: result.rise,
     dusk: result.set,
-  };
+  }
 }
 
 /**
@@ -86,10 +87,10 @@ export function calculateTwilight(
   jd: number,
   longitude: number,
   latitude: number,
-  type: HorizonType = HorizonType.Civil
+  type: HorizonType = HorizonType.Civil,
 ): TwilightTimes {
-  const result = calculateSunRiseTransitSet(jd, longitude, latitude, type);
-  return extractTwilightTimes(result);
+  const result = calculateSunRiseTransitSet(jd, longitude, latitude, type)
+  return extractTwilightTimes(result)
 }
 
 /**
@@ -114,9 +115,9 @@ export function calculateTwilight(
 export function calculateCivilTwilight(
   jd: number,
   longitude: number,
-  latitude: number
+  latitude: number,
 ): TwilightTimes {
-  return calculateTwilight(jd, longitude, latitude, HorizonType.Civil);
+  return calculateTwilight(jd, longitude, latitude, HorizonType.Civil)
 }
 
 /**
@@ -141,9 +142,9 @@ export function calculateCivilTwilight(
 export function calculateNauticalTwilight(
   jd: number,
   longitude: number,
-  latitude: number
+  latitude: number,
 ): TwilightTimes {
-  return calculateTwilight(jd, longitude, latitude, HorizonType.Nautical);
+  return calculateTwilight(jd, longitude, latitude, HorizonType.Nautical)
 }
 
 /**
@@ -168,7 +169,7 @@ export function calculateNauticalTwilight(
 export function calculateAstronomicalTwilight(
   jd: number,
   longitude: number,
-  latitude: number
+  latitude: number,
 ): TwilightTimes {
-  return calculateTwilight(jd, longitude, latitude, HorizonType.Astronomical);
+  return calculateTwilight(jd, longitude, latitude, HorizonType.Astronomical)
 }

@@ -25,13 +25,13 @@ export enum FestivalType {
  */
 export interface FestivalInfo {
   /** 节日名称 */
-  name: string;
+  name: string
   /** 节日类型 */
-  type: FestivalType;
+  type: FestivalType
   /** 起始年份（可选） */
-  startYear?: number;
+  startYear?: number
   /** 结束年份（可选） */
-  endYear?: number;
+  endYear?: number
 }
 
 /**
@@ -79,7 +79,7 @@ export const SOLAR_FESTIVALS: Record<string, FestivalInfo[]> = {
   '1224': [{ name: '平安夜', type: FestivalType.Important }],
   '1225': [{ name: '圣诞节', type: FestivalType.Important }],
   '1226': [{ name: '毛泽东诞辰纪念', type: FestivalType.Normal }],
-};
+}
 
 /**
  * 农历节日表
@@ -104,7 +104,7 @@ export const LUNAR_FESTIVALS: Record<string, FestivalInfo[]> = {
   '1223': [{ name: '小年(北方)', type: FestivalType.Important }],
   '1224': [{ name: '小年(南方)', type: FestivalType.Important }],
   '1230': [{ name: '除夕', type: FestivalType.Holiday }], // 需特殊处理大小月
-};
+}
 
 /**
  * 周计算节日表
@@ -117,7 +117,7 @@ export const WEEK_FESTIVALS: Record<string, FestivalInfo[]> = {
   '05020': [{ name: '母亲节', type: FestivalType.Important }], // 5月第2个周日
   '06030': [{ name: '父亲节', type: FestivalType.Important }], // 6月第3个周日
   '11044': [{ name: '感恩节', type: FestivalType.Important }], // 11月第4个周四
-};
+}
 
 /**
  * 获取公历节日
@@ -128,16 +128,19 @@ export const WEEK_FESTIVALS: Record<string, FestivalInfo[]> = {
  * @returns 节日列表
  */
 export function getSolarFestivals(month: number, day: number, year?: number): FestivalInfo[] {
-  const key = String(month).padStart(2, '0') + String(day).padStart(2, '0');
-  const festivals = SOLAR_FESTIVALS[key] || [];
+  const key = String(month).padStart(2, '0') + String(day).padStart(2, '0')
+  const festivals = SOLAR_FESTIVALS[key] || []
 
-  if (year === undefined) return festivals;
+  if (year === undefined)
+    return festivals
 
   return festivals.filter((f) => {
-    if (f.startYear && year < f.startYear) return false;
-    if (f.endYear && year > f.endYear) return false;
-    return true;
-  });
+    if (f.startYear && year < f.startYear)
+      return false
+    if (f.endYear && year > f.endYear)
+      return false
+    return true
+  })
 }
 
 /**
@@ -153,23 +156,24 @@ export function getLunarFestivals(
   month: number,
   day: number,
   isLeap: boolean = false,
-  monthDays?: number
+  monthDays?: number,
 ): FestivalInfo[] {
   // 闰月没有节日
-  if (isLeap) return [];
+  if (isLeap)
+    return []
 
-  const key = String(month).padStart(2, '0') + String(day).padStart(2, '0');
-  let festivals = LUNAR_FESTIVALS[key] || [];
+  const key = String(month).padStart(2, '0') + String(day).padStart(2, '0')
+  let festivals = LUNAR_FESTIVALS[key] || []
 
   // 特殊处理除夕（腊月最后一天）
   if (month === 12 && monthDays !== undefined && day === monthDays) {
-    const chuxi = LUNAR_FESTIVALS['1230'];
+    const chuxi = LUNAR_FESTIVALS['1230']
     if (chuxi) {
-      festivals = [...festivals, ...chuxi];
+      festivals = [...festivals, ...chuxi]
     }
   }
 
-  return festivals;
+  return festivals
 }
 
 /**
@@ -185,24 +189,24 @@ export function getWeekFestivals(
   month: number,
   weekOfMonth: number,
   dayOfWeek: number,
-  isLastWeek: boolean = false
+  isLastWeek: boolean = false,
 ): FestivalInfo[] {
-  const key =
-    String(month).padStart(2, '0') +
-    String(weekOfMonth).padStart(2, '0') +
-    String(dayOfWeek);
+  const key
+    = String(month).padStart(2, '0')
+      + String(weekOfMonth).padStart(2, '0')
+      + String(dayOfWeek)
 
-  let festivals = WEEK_FESTIVALS[key] || [];
+  let festivals = WEEK_FESTIVALS[key] || []
 
   // 检查最后一周的节日
   if (isLastWeek) {
-    const lastWeekKey =
-      String(month).padStart(2, '0') + '50' + String(dayOfWeek);
-    const lastWeekFestivals = WEEK_FESTIVALS[lastWeekKey] || [];
-    festivals = [...festivals, ...lastWeekFestivals];
+    const lastWeekKey
+      = `${String(month).padStart(2, '0')}50${String(dayOfWeek)}`
+    const lastWeekFestivals = WEEK_FESTIVALS[lastWeekKey] || []
+    festivals = [...festivals, ...lastWeekFestivals]
   }
 
-  return festivals;
+  return festivals
 }
 
 /**
@@ -210,17 +214,17 @@ export function getWeekFestivals(
  */
 export interface DateFestivals {
   /** 公历节日 */
-  solar: FestivalInfo[];
+  solar: FestivalInfo[]
   /** 农历节日 */
-  lunar: FestivalInfo[];
+  lunar: FestivalInfo[]
   /** 周计算节日 */
-  week: FestivalInfo[];
+  week: FestivalInfo[]
   /** 是否是放假日 */
-  isHoliday: boolean;
+  isHoliday: boolean
   /** 所有重要节日名称 */
-  importantNames: string[];
+  importantNames: string[]
   /** 所有节日名称 */
-  allNames: string[];
+  allNames: string[]
 }
 
 /**
@@ -248,26 +252,26 @@ export function getAllFestivals(
   lunarMonthDays: number,
   weekOfMonth: number,
   dayOfWeek: number,
-  totalWeeks: number
+  totalWeeks: number,
 ): DateFestivals {
-  const solar = getSolarFestivals(solarMonth, solarDay, solarYear);
-  const lunar = getLunarFestivals(lunarMonth, lunarDay, isLeapMonth, lunarMonthDays);
+  const solar = getSolarFestivals(solarMonth, solarDay, solarYear)
+  const lunar = getLunarFestivals(lunarMonth, lunarDay, isLeapMonth, lunarMonthDays)
   const week = getWeekFestivals(
     solarMonth,
     weekOfMonth,
     dayOfWeek,
-    weekOfMonth === totalWeeks
-  );
+    weekOfMonth === totalWeeks,
+  )
 
-  const all = [...solar, ...lunar, ...week];
-  const isHoliday =
-    all.some((f) => f.type === FestivalType.Holiday) || dayOfWeek === 0 || dayOfWeek === 6;
+  const all = [...solar, ...lunar, ...week]
+  const isHoliday
+    = all.some(f => f.type === FestivalType.Holiday) || dayOfWeek === 0 || dayOfWeek === 6
 
   const importantNames = all
-    .filter((f) => f.type === FestivalType.Holiday || f.type === FestivalType.Important)
-    .map((f) => f.name);
+    .filter(f => f.type === FestivalType.Holiday || f.type === FestivalType.Important)
+    .map(f => f.name)
 
-  const allNames = all.map((f) => f.name);
+  const allNames = all.map(f => f.name)
 
   return {
     solar,
@@ -276,5 +280,5 @@ export function getAllFestivals(
     isHoliday,
     importantNames,
     allNames,
-  };
+  }
 }

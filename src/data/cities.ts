@@ -12,23 +12,25 @@
  */
 export interface CityInfo {
   /** 城市名称 */
-  name: string;
+  name: string
   /** 经度 (度，东经为正) */
-  longitude: number;
+  longitude: number
   /** 纬度 (度，北纬为正) */
-  latitude: number;
+  latitude: number
   /** 省份 */
-  province: string;
+  province: string
 }
 
 /**
  * 解码经纬度编码字符
  */
 function decodeChar(c: string): number {
-  const code = c.charCodeAt(0);
-  if (code > 96) return code - 97 + 36; // a-z → 36-61
-  if (code > 64) return code - 65 + 10; // A-Z → 10-35
-  return code - 48; // 0-9 → 0-9
+  const code = c.charCodeAt(0)
+  if (code > 96)
+    return code - 97 + 36 // a-z → 36-61
+  if (code > 64)
+    return code - 65 + 10 // A-Z → 10-35
+  return code - 48 // 0-9 → 0-9
 }
 
 /**
@@ -38,18 +40,18 @@ function decodeChar(c: string): number {
  */
 export function decodeCoordinates(encoded: string): [number, number] {
   if (encoded.length < 4) {
-    throw new Error('编码字符串长度必须至少为4');
+    throw new Error('编码字符串长度必须至少为4')
   }
 
-  const v0 = decodeChar(encoded[0]);
-  const v1 = decodeChar(encoded[1]);
-  const v2 = decodeChar(encoded[2]);
-  const v3 = decodeChar(encoded[3]);
+  const v0 = decodeChar(encoded[0])
+  const v1 = decodeChar(encoded[1])
+  const v2 = decodeChar(encoded[2])
+  const v3 = decodeChar(encoded[3])
 
-  const longitude = v2 + v3 / 60 + 73; // 经度 (度)
-  const latitude = v0 + v1 / 60; // 纬度 (度)
+  const longitude = v2 + v3 / 60 + 73 // 经度 (度)
+  const latitude = v0 + v1 / 60 // 纬度 (度)
 
-  return [longitude, latitude];
+  return [longitude, latitude]
 }
 
 /**
@@ -59,16 +61,16 @@ export function decodeCoordinates(encoded: string): [number, number] {
  * @returns 4字符编码字符串
  */
 export function encodeCoordinates(longitude: number, latitude: number): string {
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
-  const lonDeg = longitude - 73;
-  const lonMin = Math.round((lonDeg % 1) * 60);
-  const lonD = Math.floor(lonDeg);
+  const lonDeg = longitude - 73
+  const lonMin = Math.round((lonDeg % 1) * 60)
+  const lonD = Math.floor(lonDeg)
 
-  const latMin = Math.round((latitude % 1) * 60);
-  const latD = Math.floor(latitude);
+  const latMin = Math.round((latitude % 1) * 60)
+  const latD = Math.floor(latitude)
 
-  return chars[latD] + chars[latMin] + chars[lonD] + chars[lonMin];
+  return chars[latD] + chars[latMin] + chars[lonD] + chars[lonMin]
 }
 
 /**
@@ -110,55 +112,56 @@ const PROVINCE_DATA: Record<string, string> = {
   香港: 'MLhL香港 MLhJ九龙 MKhR新界',
   澳门: 'MMhD澳门',
   台湾省: 'PAmd台北 PJm6基隆 P4mb新竹 Orm0台中 OemT彰化 OOmQ嘉义 NOmB台南 NAlt高雄 NGld屏东 Ndl1台东 PAle宜兰 Onlk花莲',
-};
+}
 
 /**
  * 省份列表
  */
-export const PROVINCES: readonly string[] = Object.keys(PROVINCE_DATA);
+export const PROVINCES: readonly string[] = Object.keys(PROVINCE_DATA)
 
 /**
  * 解析城市数据
  */
 function parseCityData(): Map<string, CityInfo[]> {
-  const result = new Map<string, CityInfo[]>();
+  const result = new Map<string, CityInfo[]>()
 
   for (const [province, data] of Object.entries(PROVINCE_DATA)) {
-    const cities: CityInfo[] = [];
-    const items = data.split(' ');
+    const cities: CityInfo[] = []
+    const items = data.split(' ')
 
     for (const item of items) {
-      if (item.length < 5) continue; // 至少4字符编码 + 1字符名称
+      if (item.length < 5)
+        continue // 至少4字符编码 + 1字符名称
 
-      const encoded = item.substring(0, 4);
-      const name = item.substring(4);
-      const [longitude, latitude] = decodeCoordinates(encoded);
+      const encoded = item.substring(0, 4)
+      const name = item.substring(4)
+      const [longitude, latitude] = decodeCoordinates(encoded)
 
       cities.push({
         name,
         longitude,
         latitude,
         province,
-      });
+      })
     }
 
-    result.set(province, cities);
+    result.set(province, cities)
   }
 
-  return result;
+  return result
 }
 
 // 缓存解析后的城市数据
-let cityDataCache: Map<string, CityInfo[]> | null = null;
+let cityDataCache: Map<string, CityInfo[]> | null = null
 
 /**
  * 获取所有城市数据
  */
 function getCityData(): Map<string, CityInfo[]> {
   if (!cityDataCache) {
-    cityDataCache = parseCityData();
+    cityDataCache = parseCityData()
   }
-  return cityDataCache;
+  return cityDataCache
 }
 
 /**
@@ -167,8 +170,8 @@ function getCityData(): Map<string, CityInfo[]> {
  * @returns 城市列表
  */
 export function getCitiesByProvince(province: string): CityInfo[] {
-  const data = getCityData();
-  return data.get(province) || [];
+  const data = getCityData()
+  return data.get(province) || []
 }
 
 /**
@@ -177,8 +180,8 @@ export function getCitiesByProvince(province: string): CityInfo[] {
  * @returns 省会城市信息
  */
 export function getProvincialCapital(province: string): CityInfo | null {
-  const cities = getCitiesByProvince(province);
-  return cities.length > 0 ? cities[0] : null;
+  const cities = getCitiesByProvince(province)
+  return cities.length > 0 ? cities[0] : null
 }
 
 /**
@@ -187,18 +190,18 @@ export function getProvincialCapital(province: string): CityInfo | null {
  * @returns 匹配的城市列表
  */
 export function findCityByName(name: string): CityInfo[] {
-  const results: CityInfo[] = [];
-  const data = getCityData();
+  const results: CityInfo[] = []
+  const data = getCityData()
 
   for (const cities of data.values()) {
     for (const city of cities) {
       if (city.name.includes(name) || name.includes(city.name)) {
-        results.push(city);
+        results.push(city)
       }
     }
   }
 
-  return results;
+  return results
 }
 
 /**
@@ -206,14 +209,14 @@ export function findCityByName(name: string): CityInfo[] {
  * @returns 所有城市的平面列表
  */
 export function getAllCities(): CityInfo[] {
-  const results: CityInfo[] = [];
-  const data = getCityData();
+  const results: CityInfo[] = []
+  const data = getCityData()
 
   for (const cities of data.values()) {
-    results.push(...cities);
+    results.push(...cities)
   }
 
-  return results;
+  return results
 }
 
 /**
@@ -234,4 +237,4 @@ export const MAJOR_CITIES: Record<string, CityInfo> = {
   苏州: { name: '苏州市', longitude: 120.62, latitude: 31.3, province: '江苏省' },
   香港: { name: '香港', longitude: 114.17, latitude: 22.28, province: '香港' },
   台北: { name: '台北', longitude: 121.52, latitude: 25.03, province: '台湾省' },
-};
+}

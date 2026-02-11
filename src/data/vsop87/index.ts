@@ -11,85 +11,85 @@
 
 // 地球
 export {
-  EARTH_MULTIPLIER,
+  EARTH_B,
   EARTH_INDEX,
   EARTH_L,
-  EARTH_B,
+  EARTH_MULTIPLIER,
   EARTH_R,
-} from './earth';
-
-// 水星
-export {
-  MERCURY_MULTIPLIER,
-  MERCURY_INDEX,
-  MERCURY_L,
-  MERCURY_B,
-  MERCURY_R,
-} from './mercury';
-
-// 金星
-export {
-  VENUS_MULTIPLIER,
-  VENUS_INDEX,
-  VENUS_L,
-  VENUS_B,
-  VENUS_R,
-} from './venus';
-
-// 火星
-export {
-  MARS_MULTIPLIER,
-  MARS_INDEX,
-  MARS_L,
-  MARS_B,
-  MARS_R,
-} from './mars';
+} from './earth'
 
 // 木星
 export {
-  JUPITER_MULTIPLIER,
+  JUPITER_B,
   JUPITER_INDEX,
   JUPITER_L,
-  JUPITER_B,
+  JUPITER_MULTIPLIER,
   JUPITER_R,
-} from './jupiter';
+} from './jupiter'
 
-// 土星
+// 火星
 export {
-  SATURN_MULTIPLIER,
-  SATURN_INDEX,
-  SATURN_L,
-  SATURN_B,
-  SATURN_R,
-} from './saturn';
+  MARS_B,
+  MARS_INDEX,
+  MARS_L,
+  MARS_MULTIPLIER,
+  MARS_R,
+} from './mars'
 
-// 天王星
+// 水星
 export {
-  URANUS_MULTIPLIER,
-  URANUS_INDEX,
-  URANUS_L,
-  URANUS_B,
-  URANUS_R,
-} from './uranus';
+  MERCURY_B,
+  MERCURY_INDEX,
+  MERCURY_L,
+  MERCURY_MULTIPLIER,
+  MERCURY_R,
+} from './mercury'
+
+// 月球 (独立算法)
+export { MOON_B, MOON_L, MOON_R } from './moon'
 
 // 海王星
 export {
-  NEPTUNE_MULTIPLIER,
+  NEPTUNE_B,
   NEPTUNE_INDEX,
   NEPTUNE_L,
-  NEPTUNE_B,
+  NEPTUNE_MULTIPLIER,
   NEPTUNE_R,
-} from './neptune';
+} from './neptune'
 
 // 冥王星 (独立算法，非VSOP87)
 export {
+  PLUTO_DATA,
   PLUTO_MULTIPLIER,
   PLUTO_OFFSET,
   PLUTO_X,
   PLUTO_Y,
   PLUTO_Z,
-  PLUTO_DATA,
-} from './pluto';
+} from './pluto'
 
-// 月球 (独立算法)
-export { MOON_L, MOON_B, MOON_R } from './moon';
+// 土星
+export {
+  SATURN_B,
+  SATURN_INDEX,
+  SATURN_L,
+  SATURN_MULTIPLIER,
+  SATURN_R,
+} from './saturn'
+
+// 天王星
+export {
+  URANUS_B,
+  URANUS_INDEX,
+  URANUS_L,
+  URANUS_MULTIPLIER,
+  URANUS_R,
+} from './uranus'
+
+// 金星
+export {
+  VENUS_B,
+  VENUS_INDEX,
+  VENUS_L,
+  VENUS_MULTIPLIER,
+  VENUS_R,
+} from './venus'

@@ -9,62 +9,63 @@
  * 使用 VSOP87 理论计算行星位置
  */
 
-import { normalizeAngle, SphericalCoord } from '../core/coordinate';
-import { calculateVSOP87Series } from '../core/series';
+import type { SphericalCoord } from '../core/coordinate'
+import { normalizeAngle } from '../core/coordinate'
+import { calculateVSOP87Series } from '../core/series'
 import {
-  calculateEarthLongitude,
-  calculateEarthLatitude,
-  calculateEarthSunDistance,
-} from './sun';
+  JUPITER_B,
+  JUPITER_L,
+  JUPITER_MULTIPLIER,
+  JUPITER_R,
+} from '../data/vsop87/jupiter'
 
+import {
+  MARS_B,
+  MARS_L,
+  MARS_MULTIPLIER,
+  MARS_R,
+} from '../data/vsop87/mars'
 // 导入各行星 VSOP87 数据
 import {
-  MERCURY_MULTIPLIER,
-  MERCURY_L,
   MERCURY_B,
+  MERCURY_L,
+  MERCURY_MULTIPLIER,
   MERCURY_R,
-} from '../data/vsop87/mercury';
+} from '../data/vsop87/mercury'
 import {
-  VENUS_MULTIPLIER,
-  VENUS_L,
-  VENUS_B,
-  VENUS_R,
-} from '../data/vsop87/venus';
-import {
-  MARS_MULTIPLIER,
-  MARS_L,
-  MARS_B,
-  MARS_R,
-} from '../data/vsop87/mars';
-import {
-  JUPITER_MULTIPLIER,
-  JUPITER_L,
-  JUPITER_B,
-  JUPITER_R,
-} from '../data/vsop87/jupiter';
-import {
-  SATURN_MULTIPLIER,
-  SATURN_L,
-  SATURN_B,
-  SATURN_R,
-} from '../data/vsop87/saturn';
-import {
-  URANUS_MULTIPLIER,
-  URANUS_L,
-  URANUS_B,
-  URANUS_R,
-} from '../data/vsop87/uranus';
-import {
-  NEPTUNE_MULTIPLIER,
-  NEPTUNE_L,
   NEPTUNE_B,
+  NEPTUNE_L,
+  NEPTUNE_MULTIPLIER,
   NEPTUNE_R,
-} from '../data/vsop87/neptune';
+} from '../data/vsop87/neptune'
 import {
+  PLUTO_DATA,
   PLUTO_MULTIPLIER,
   PLUTO_OFFSET,
-  PLUTO_DATA,
-} from '../data/vsop87/pluto';
+} from '../data/vsop87/pluto'
+import {
+  SATURN_B,
+  SATURN_L,
+  SATURN_MULTIPLIER,
+  SATURN_R,
+} from '../data/vsop87/saturn'
+import {
+  URANUS_B,
+  URANUS_L,
+  URANUS_MULTIPLIER,
+  URANUS_R,
+} from '../data/vsop87/uranus'
+import {
+  VENUS_B,
+  VENUS_L,
+  VENUS_MULTIPLIER,
+  VENUS_R,
+} from '../data/vsop87/venus'
+import {
+  calculateEarthLatitude,
+  calculateEarthLongitude,
+  calculateEarthSunDistance,
+} from './sun'
 
 /**
  * 行星编号
@@ -96,7 +97,7 @@ export const PLANET_NAMES_CN = [
   '海王星',
   '冥王星',
   '太阳',
-] as const;
+] as const
 
 /**
  * 行星名称 (英文)
@@ -112,7 +113,7 @@ export const PLANET_NAMES_EN = [
   'Neptune',
   'Pluto',
   'Sun',
-] as const;
+] as const
 
 /**
  * 行星星历修正表
@@ -129,7 +130,7 @@ export const PLANET_CORRECTIONS: readonly (readonly number[])[] = [
   [-0.25486, +0.00276, +0.42926], // 土星 Saturn
   [+0.24588, +0.00345, -14.46266], // 天王星 Uranus
   [-0.95116, +0.02481, +58.30651], // 海王星 Neptune
-] as const;
+] as const
 
 /**
  * 行星会合周期 (天)
@@ -144,7 +145,7 @@ export const PLANET_SYNODIC_PERIODS = [
   378, // 土星
   370, // 天王星
   367, // 海王星
-] as const;
+] as const
 
 /**
  * 行星轨道周期 (年)
@@ -158,17 +159,17 @@ export const PLANET_ORBITAL_PERIODS = [
   29.46, // 土星
   84.01, // 天王星
   164.8, // 海王星
-] as const;
+] as const
 
 /**
  * 行星 VSOP87 数据配置
  */
 interface PlanetVSOP87Config {
-  multiplier: number;
-  L: number[][];
-  B: number[][];
-  R: number[][];
-  corrections: readonly number[]; // [黄经修正, 黄纬修正, 距离修正]
+  multiplier: number
+  L: number[][]
+  B: number[][]
+  R: number[][]
+  corrections: readonly number[] // [黄经修正, 黄纬修正, 距离修正]
 }
 
 /**
@@ -224,12 +225,12 @@ const PLANET_VSOP87_DATA: Record<number, PlanetVSOP87Config> = {
     R: NEPTUNE_R,
     corrections: PLANET_CORRECTIONS[6],
   },
-};
+}
 
 /**
  * 弧度转角秒常数
  */
-const RAD_TO_ARCSEC = 180 * 3600 / Math.PI;
+const RAD_TO_ARCSEC = 180 * 3600 / Math.PI
 
 /**
  * 计算行星 VSOP87 坐标分量
@@ -244,30 +245,30 @@ function calculateVSOP87Component(
   dataArrays: number[][],
   multiplier: number,
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  const tMillennia = t / 10; // 转为儒略千年数
+  const tMillennia = t / 10 // 转为儒略千年数
 
-  let result = 0;
-  let tPower = 1;
+  let result = 0
+  let tPower = 1
 
   for (let i = 0; i < dataArrays.length; i++) {
-    const data = dataArrays[i];
+    const data = dataArrays[i]
     if (data && data.length > 0) {
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0 && dataArrays[0].length > 0) {
         // 高次项使用较少的项数
-        const ratio = (data.length / 3) / (dataArrays[0].length / 3);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = (data.length / 3) / (dataArrays[0].length / 3)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateVSOP87Series(data, tMillennia, n);
-      result += seriesSum * tPower;
+      const seriesSum = calculateVSOP87Series(data, tMillennia, n)
+      result += seriesSum * tPower
     }
-    tPower *= tMillennia;
+    tPower *= tMillennia
   }
 
-  return result / multiplier;
+  return result / multiplier
 }
 
 /**
@@ -280,32 +281,34 @@ function calculateVSOP87Component(
  * @returns [X, Y, Z] 直角坐标 (AU)
  */
 function calculatePlutoRectangular(t: number): [number, number, number] {
-  const c0 = Math.PI / 180 / 100000;
-  const x = -1 + 2 * (t * 36525 + 1825394.5) / 2185000;
-  const T = t / 100000000;
-  const r: [number, number, number] = [0, 0, 0];
+  const c0 = Math.PI / 180 / 100000
+  const x = -1 + 2 * (t * 36525 + 1825394.5) / 2185000
+  const T = t / 100000000
+  const r: [number, number, number] = [0, 0, 0]
 
   for (let i = 0; i < 9; i++) {
-    const ob = PLUTO_DATA[i];
-    const N = ob.length;
-    let v = 0;
+    const ob = PLUTO_DATA[i]
+    const N = ob.length
+    let v = 0
 
     for (let j = 0; j < N; j += 3) {
-      v += ob[j] * Math.sin(ob[j + 1] * T + ob[j + 2] * c0);
+      v += ob[j] * Math.sin(ob[j + 1] * T + ob[j + 2] * c0)
     }
 
-    if (i % 3 === 1) v *= x;
-    if (i % 3 === 2) v *= x * x;
+    if (i % 3 === 1)
+      v *= x
+    if (i % 3 === 2)
+      v *= x * x
 
-    r[Math.floor(i / 3)] += v / PLUTO_MULTIPLIER;
+    r[Math.floor(i / 3)] += v / PLUTO_MULTIPLIER
   }
 
   // 常数校正项
-  r[0] += PLUTO_OFFSET.X[0] + PLUTO_OFFSET.X[1] * x;
-  r[1] += PLUTO_OFFSET.Y[0] + PLUTO_OFFSET.Y[1] * x;
-  r[2] += PLUTO_OFFSET.Z[0] + PLUTO_OFFSET.Z[1] * x;
+  r[0] += PLUTO_OFFSET.X[0] + PLUTO_OFFSET.X[1] * x
+  r[1] += PLUTO_OFFSET.Y[0] + PLUTO_OFFSET.Y[1] * x
+  r[2] += PLUTO_OFFSET.Z[0] + PLUTO_OFFSET.Z[1] * x
 
-  return r;
+  return r
 }
 
 /**
@@ -319,14 +322,14 @@ function calculatePlutoRectangular(t: number): [number, number, number] {
  * @returns 冥王星日心黄道坐标 [黄经, 黄纬, 距离(AU)]
  */
 function calculatePlutoHeliocentricCoord(t: number): SphericalCoord {
-  const [x, y, z] = calculatePlutoRectangular(t);
+  const [x, y, z] = calculatePlutoRectangular(t)
 
   // 直角坐标转球坐标
-  const distance = Math.sqrt(x * x + y * y + z * z);
-  const lon = normalizeAngle(Math.atan2(y, x));
-  const lat = Math.asin(z / distance);
+  const distance = Math.sqrt(x * x + y * y + z * z)
+  const lon = normalizeAngle(Math.atan2(y, x))
+  const lat = Math.asin(z / distance)
 
-  return [lon, lat, distance];
+  return [lon, lat, distance]
 }
 
 /**
@@ -343,13 +346,13 @@ export function calculateEarthHeliocentricCoord(
   t: number,
   n1: number = -1,
   n2: number = -1,
-  n3: number = -1
+  n3: number = -1,
 ): SphericalCoord {
   return [
     calculateEarthLongitude(t, n1),
     calculateEarthLatitude(t, n2),
     calculateEarthSunDistance(t, n3),
-  ];
+  ]
 }
 
 /**
@@ -370,42 +373,42 @@ export function calculatePlanetHeliocentricCoord(
   t: number,
   n1: number = -1,
   n2: number = -1,
-  n3: number = -1
+  n3: number = -1,
 ): SphericalCoord {
   // 地球使用专门的计算函数
   if (planet === Planet.Earth) {
-    return calculateEarthHeliocentricCoord(t, n1, n2, n3);
+    return calculateEarthHeliocentricCoord(t, n1, n2, n3)
   }
 
   // 太阳在日心坐标系中位于原点
   if (planet === Planet.Sun) {
-    return [0, 0, 0];
+    return [0, 0, 0]
   }
 
   // 冥王星使用专门的计算方法
   if (planet === Planet.Pluto) {
-    return calculatePlutoHeliocentricCoord(t);
+    return calculatePlutoHeliocentricCoord(t)
   }
 
   // 其他行星使用 VSOP87 数据
-  const config = PLANET_VSOP87_DATA[planet];
+  const config = PLANET_VSOP87_DATA[planet]
   if (!config) {
     // 未知行星，返回零值
-    return [0, 0, 0];
+    return [0, 0, 0]
   }
 
   // 计算黄经、黄纬、距离
-  let lon = calculateVSOP87Component(config.L, config.multiplier, t, n1);
-  let lat = calculateVSOP87Component(config.B, config.multiplier, t, n2);
-  let dist = calculateVSOP87Component(config.R, config.multiplier, t, n3);
+  let lon = calculateVSOP87Component(config.L, config.multiplier, t, n1)
+  let lat = calculateVSOP87Component(config.B, config.multiplier, t, n2)
+  let dist = calculateVSOP87Component(config.R, config.multiplier, t, n3)
 
   // 应用修正项 (角秒转弧度)
-  const [lonCorr, latCorr, distCorr] = config.corrections;
-  lon += lonCorr / RAD_TO_ARCSEC;
-  lat += latCorr / RAD_TO_ARCSEC;
-  dist += distCorr / 1000000; // 10^-6 AU
+  const [lonCorr, latCorr, distCorr] = config.corrections
+  lon += lonCorr / RAD_TO_ARCSEC
+  lat += latCorr / RAD_TO_ARCSEC
+  dist += distCorr / 1000000 // 10^-6 AU
 
-  return [normalizeAngle(lon), lat, dist];
+  return [normalizeAngle(lon), lat, dist]
 }
 
 /**
@@ -419,36 +422,36 @@ export function calculatePlanetHeliocentricCoord(
  */
 export function calculatePlanetGeocentricCoord(
   planet: Planet,
-  t: number
+  t: number,
 ): SphericalCoord {
   if (planet === Planet.Earth) {
-    return [0, 0, 0]; // 地球在地心坐标系中位于原点
+    return [0, 0, 0] // 地球在地心坐标系中位于原点
   }
 
   // 获取地球和行星的日心坐标
-  const earth = calculateEarthHeliocentricCoord(t);
-  const planetCoord = calculatePlanetHeliocentricCoord(planet, t);
+  const earth = calculateEarthHeliocentricCoord(t)
+  const planetCoord = calculatePlanetHeliocentricCoord(planet, t)
 
   // 转换为直角坐标
-  const earthX = earth[2] * Math.cos(earth[1]) * Math.cos(earth[0]);
-  const earthY = earth[2] * Math.cos(earth[1]) * Math.sin(earth[0]);
-  const earthZ = earth[2] * Math.sin(earth[1]);
+  const earthX = earth[2] * Math.cos(earth[1]) * Math.cos(earth[0])
+  const earthY = earth[2] * Math.cos(earth[1]) * Math.sin(earth[0])
+  const earthZ = earth[2] * Math.sin(earth[1])
 
-  const planetX = planetCoord[2] * Math.cos(planetCoord[1]) * Math.cos(planetCoord[0]);
-  const planetY = planetCoord[2] * Math.cos(planetCoord[1]) * Math.sin(planetCoord[0]);
-  const planetZ = planetCoord[2] * Math.sin(planetCoord[1]);
+  const planetX = planetCoord[2] * Math.cos(planetCoord[1]) * Math.cos(planetCoord[0])
+  const planetY = planetCoord[2] * Math.cos(planetCoord[1]) * Math.sin(planetCoord[0])
+  const planetZ = planetCoord[2] * Math.sin(planetCoord[1])
 
   // 地心坐标 = 行星坐标 - 地球坐标
-  const dx = planetX - earthX;
-  const dy = planetY - earthY;
-  const dz = planetZ - earthZ;
+  const dx = planetX - earthX
+  const dy = planetY - earthY
+  const dz = planetZ - earthZ
 
   // 转换回球坐标
-  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-  const lon = normalizeAngle(Math.atan2(dy, dx));
-  const lat = Math.asin(dz / distance);
+  const distance = Math.sqrt(dx * dx + dy * dy + dz * dz)
+  const lon = normalizeAngle(Math.atan2(dy, dx))
+  const lat = Math.asin(dz / distance)
 
-  return [lon, lat, distance];
+  return [lon, lat, distance]
 }
 
 /**
@@ -461,27 +464,27 @@ export function calculatePlanetGeocentricCoord(
  * @returns 相位角 (弧度, 0-π)
  */
 export function calculatePlanetPhaseAngle(planet: Planet, t: number): number {
-  const earth = calculateEarthHeliocentricCoord(t);
-  const planetCoord = calculatePlanetHeliocentricCoord(planet, t);
+  const earth = calculateEarthHeliocentricCoord(t)
+  const planetCoord = calculatePlanetHeliocentricCoord(planet, t)
 
   // 地球到太阳的向量 (负的地球位置)
-  const sunFromEarth = earth[2];
+  const sunFromEarth = earth[2]
 
   // 行星到太阳的距离
-  const sunFromPlanet = planetCoord[2];
+  const sunFromPlanet = planetCoord[2]
 
   // 地球到行星的距离
-  const geocentric = calculatePlanetGeocentricCoord(planet, t);
-  const earthToPlanet = geocentric[2];
+  const geocentric = calculatePlanetGeocentricCoord(planet, t)
+  const earthToPlanet = geocentric[2]
 
   // 使用余弦定理计算相位角
-  const cosPhase =
-    (sunFromPlanet * sunFromPlanet +
-      earthToPlanet * earthToPlanet -
-      sunFromEarth * sunFromEarth) /
-    (2 * sunFromPlanet * earthToPlanet);
+  const cosPhase
+    = (sunFromPlanet * sunFromPlanet
+      + earthToPlanet * earthToPlanet
+      - sunFromEarth * sunFromEarth)
+    / (2 * sunFromPlanet * earthToPlanet)
 
-  return Math.acos(Math.max(-1, Math.min(1, cosPhase)));
+  return Math.acos(Math.max(-1, Math.min(1, cosPhase)))
 }
 
 /**
@@ -503,25 +506,26 @@ export function calculatePlanetMagnitude(planet: Planet, t: number): number {
     [Planet.Saturn]: [-8.88, 0.044],
     [Planet.Uranus]: [-7.19, 0.028],
     [Planet.Neptune]: [-6.87, 0.0],
-  };
+  }
 
-  const params = magnitudeParams[planet];
-  if (!params) return 0;
+  const params = magnitudeParams[planet]
+  if (!params)
+    return 0
 
-  const [H, G] = params;
+  const [H, G] = params
 
-  const geocentric = calculatePlanetGeocentricCoord(planet, t);
-  const heliocentric = calculatePlanetHeliocentricCoord(planet, t);
+  const geocentric = calculatePlanetGeocentricCoord(planet, t)
+  const heliocentric = calculatePlanetHeliocentricCoord(planet, t)
 
-  const r = heliocentric[2]; // 日心距离
-  const delta = geocentric[2]; // 地心距离
-  const phase = calculatePlanetPhaseAngle(planet, t);
+  const r = heliocentric[2] // 日心距离
+  const delta = geocentric[2] // 地心距离
+  const phase = calculatePlanetPhaseAngle(planet, t)
 
   // 简化的相位函数
-  const phaseFactor = (1 - G) * Math.cos(phase / 2) + G * Math.cos(phase);
+  const phaseFactor = (1 - G) * Math.cos(phase / 2) + G * Math.cos(phase)
 
   // 视星等公式
-  return H + 5 * Math.log10(r * delta) - 2.5 * Math.log10(phaseFactor);
+  return H + 5 * Math.log10(r * delta) - 2.5 * Math.log10(phaseFactor)
 }
 
 /**
@@ -534,27 +538,29 @@ export function calculatePlanetMagnitude(planet: Planet, t: number): number {
  * @returns true 表示顺行, false 表示逆行
  */
 export function isPlanetDirect(planet: Planet, t: number): boolean {
-  const dt = 0.0001; // 约 3.65 天
-  const lon1 = calculatePlanetGeocentricCoord(planet, t)[0];
-  const lon2 = calculatePlanetGeocentricCoord(planet, t + dt)[0];
+  const dt = 0.0001 // 约 3.65 天
+  const lon1 = calculatePlanetGeocentricCoord(planet, t)[0]
+  const lon2 = calculatePlanetGeocentricCoord(planet, t + dt)[0]
 
   // 计算黄经变化 (考虑跨越 0°/360° 的情况)
-  let dLon = lon2 - lon1;
-  if (dLon > Math.PI) dLon -= 2 * Math.PI;
-  if (dLon < -Math.PI) dLon += 2 * Math.PI;
+  let dLon = lon2 - lon1
+  if (dLon > Math.PI)
+    dLon -= 2 * Math.PI
+  if (dLon < -Math.PI)
+    dLon += 2 * Math.PI
 
-  return dLon > 0;
+  return dLon > 0
 }
 
 /**
  * 天文单位转千米
  */
-export const AU_TO_KM = 149597870.7;
+export const AU_TO_KM = 149597870.7
 
 /**
  * 光速 (km/s)
  */
-export const SPEED_OF_LIGHT = 299792.458;
+export const SPEED_OF_LIGHT = 299792.458
 
 /**
  * 计算行星光行时间
@@ -566,5 +572,5 @@ export const SPEED_OF_LIGHT = 299792.458;
  */
 export function calculateLightTime(distance: number): number {
   // 1 AU 的光行时间约为 499 秒 = 0.00577 天
-  return (distance * AU_TO_KM) / SPEED_OF_LIGHT / 86400;
+  return (distance * AU_TO_KM) / SPEED_OF_LIGHT / 86400
 }

@@ -19,23 +19,24 @@
 export function calculateVSOP87Series(
   data: readonly number[],
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  if (data.length === 0) return 0;
+  if (data.length === 0)
+    return 0
 
-  const totalTerms = Math.floor(data.length / 3);
-  const n = termCount < 0 ? totalTerms : Math.min(termCount, totalTerms);
+  const totalTerms = Math.floor(data.length / 3)
+  const n = termCount < 0 ? totalTerms : Math.min(termCount, totalTerms)
 
-  let sum = 0;
+  let sum = 0
   for (let i = 0; i < n; i++) {
-    const idx = i * 3;
-    const A = data[idx];     // 振幅
-    const B = data[idx + 1]; // 相位
-    const C = data[idx + 2]; // 频率
-    sum += A * Math.cos(B + C * t);
+    const idx = i * 3
+    const A = data[idx] // 振幅
+    const B = data[idx + 1] // 相位
+    const C = data[idx + 2] // 频率
+    sum += A * Math.cos(B + C * t)
   }
 
-  return sum;
+  return sum
 }
 
 /**
@@ -56,32 +57,33 @@ export function calculateVSOP87Series(
 export function calculateMoonSeries(
   data: readonly number[],
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  if (data.length === 0) return 0;
+  if (data.length === 0)
+    return 0
 
-  const totalTerms = Math.floor(data.length / 6);
-  const n = termCount < 0 ? totalTerms : Math.min(termCount, totalTerms);
+  const totalTerms = Math.floor(data.length / 6)
+  const n = termCount < 0 ? totalTerms : Math.min(termCount, totalTerms)
 
   // 预计算 t 的幂次
   // @see eph0.js:1035 t2/=1e4,t3/=1e8,t4/=1e8
-  const t2 = (t * t) / 1e4;
-  const t3 = (t * t * t) / 1e8;
-  const t4 = (t * t * t * t) / 1e8;
+  const t2 = (t * t) / 1e4
+  const t3 = (t * t * t) / 1e8
+  const t4 = (t * t * t * t) / 1e8
 
-  let sum = 0;
+  let sum = 0
   for (let i = 0; i < n; i++) {
-    const idx = i * 6;
-    const A = data[idx];     // 振幅
-    const B = data[idx + 1]; // 相位
-    const C = data[idx + 2]; // t¹ 系数
-    const D = data[idx + 3]; // t² 系数
-    const E = data[idx + 4]; // t³ 系数
-    const F = data[idx + 5]; // t⁴ 系数
+    const idx = i * 6
+    const A = data[idx] // 振幅
+    const B = data[idx + 1] // 相位
+    const C = data[idx + 2] // t¹ 系数
+    const D = data[idx + 3] // t² 系数
+    const E = data[idx + 4] // t³ 系数
+    const F = data[idx + 5] // t⁴ 系数
 
-    const phase = B + C * t + D * t2 + E * t3 + F * t4;
-    sum += A * Math.cos(phase);
+    const phase = B + C * t + D * t2 + E * t3 + F * t4
+    sum += A * Math.cos(phase)
   }
 
-  return sum;
+  return sum
 }

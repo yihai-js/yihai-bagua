@@ -9,36 +9,35 @@
 
 // 月食计算 - 类型导出
 export type {
-  LunarEclipseType,
-  LunarEclipseTimes,
   LunarEclipseInfo,
-} from './lunar-eclipse';
+  LunarEclipseTimes,
+  LunarEclipseType,
+} from './lunar-eclipse'
 
 // 月食计算
 export {
   calculateLunarEclipse,
+  convertToAbsoluteJd,
   findLunarEclipses,
   findNextLunarEclipse,
-  convertToAbsoluteJd,
   getLunarEclipseTypeName,
-} from './lunar-eclipse';
+} from './lunar-eclipse'
 
 // 日食计算 - 类型导出
 export type {
-  SolarEclipseType,
-  SolarEclipseQuickResult,
   SolarEclipseInfo,
-} from './solar-eclipse';
+  SolarEclipseQuickResult,
+  SolarEclipseType,
+} from './solar-eclipse'
 
 // 日食计算
 export {
-  searchSolarEclipseFast,
   calculateSolarEclipse,
-  findSolarEclipses,
   findNextSolarEclipse,
+  findSolarEclipses,
   getSolarEclipseTypeName,
+  isAnnularEclipse,
   isCentralEclipse,
   isTotalEclipse,
-  isAnnularEclipse,
-} from './solar-eclipse';
-
+  searchSolarEclipseFast,
+} from './solar-eclipse'

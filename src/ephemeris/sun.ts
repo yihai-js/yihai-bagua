@@ -10,16 +10,17 @@
  * 使用 VSOP87 理论计算太阳位置
  */
 
-import { RAD } from '../core/constants';
-import { normalizeAngle, normalizeAngleSigned, SphericalCoord } from '../core/coordinate';
-import { calculateLongitudeNutation } from '../core/nutation';
-import { calculateVSOP87Series } from '../core/series';
+import type { SphericalCoord } from '../core/coordinate'
+import { RAD } from '../core/constants'
+import { normalizeAngle, normalizeAngleSigned } from '../core/coordinate'
+import { calculateLongitudeNutation } from '../core/nutation'
+import { calculateVSOP87Series } from '../core/series'
 import {
-  EARTH_MULTIPLIER,
-  EARTH_L,
   EARTH_B,
+  EARTH_L,
+  EARTH_MULTIPLIER,
   EARTH_R,
-} from '../data/vsop87/earth';
+} from '../data/vsop87/earth'
 
 /**
  * 计算地球黄经坐标分量
@@ -31,41 +32,41 @@ import {
  */
 export function calculateEarthLongitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  const tMillennia = t / 10; // 转为儒略千年数
-  const tMillennia2 = tMillennia * tMillennia;
-  const tMillennia3 = tMillennia2 * tMillennia;
+  const tMillennia = t / 10 // 转为儒略千年数
+  const tMillennia2 = tMillennia * tMillennia
+  const tMillennia3 = tMillennia2 * tMillennia
 
-  let result = 0;
-  let tPower = 1;
+  let result = 0
+  let tPower = 1
 
   // 计算 L0 到 L5 的贡献
   for (let i = 0; i < 6; i++) {
-    const data = EARTH_L[i];
+    const data = EARTH_L[i]
     if (data.length > 0) {
       // 确定每级使用的项数
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0) {
         // 高次项使用较少的项数
-        const ratio = data.length / 3 / (EARTH_L[0].length / 3);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = data.length / 3 / (EARTH_L[0].length / 3)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateVSOP87Series(data, tMillennia, n);
-      result += seriesSum * tPower;
+      const seriesSum = calculateVSOP87Series(data, tMillennia, n)
+      result += seriesSum * tPower
     }
-    tPower *= tMillennia;
+    tPower *= tMillennia
   }
 
-  result /= EARTH_MULTIPLIER;
+  result /= EARTH_MULTIPLIER
 
   // 地球修正项
   // @see eph0.js:971 对地球黄经的修正
-  result +=
-    (-0.0728 - 2.7702 * tMillennia - 1.1019 * tMillennia2 - 0.0996 * tMillennia3) / RAD;
+  result
+    += (-0.0728 - 2.7702 * tMillennia - 1.1019 * tMillennia2 - 0.0996 * tMillennia3) / RAD
 
-  return result;
+  return result
 }
 
 /**
@@ -78,38 +79,38 @@ export function calculateEarthLongitude(
  */
 export function calculateEarthLatitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  const tMillennia = t / 10;
-  const tMillennia2 = tMillennia * tMillennia;
-  const tMillennia3 = tMillennia2 * tMillennia;
+  const tMillennia = t / 10
+  const tMillennia2 = tMillennia * tMillennia
+  const tMillennia3 = tMillennia2 * tMillennia
 
-  let result = 0;
-  let tPower = 1;
+  let result = 0
+  let tPower = 1
 
   for (let i = 0; i < 6; i++) {
-    const data = EARTH_B[i];
+    const data = EARTH_B[i]
     if (data.length > 0) {
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0) {
-        const ratio = data.length / 3 / (EARTH_B[0].length / 3);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = data.length / 3 / (EARTH_B[0].length / 3)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateVSOP87Series(data, tMillennia, n);
-      result += seriesSum * tPower;
+      const seriesSum = calculateVSOP87Series(data, tMillennia, n)
+      result += seriesSum * tPower
     }
-    tPower *= tMillennia;
+    tPower *= tMillennia
   }
 
-  result /= EARTH_MULTIPLIER;
+  result /= EARTH_MULTIPLIER
 
   // 地球黄纬修正项
   // @see eph0.js:972 对地球黄纬的修正
-  result +=
-    (0.0 + 0.0004 * tMillennia + 0.0004 * tMillennia2 - 0.0026 * tMillennia3) / RAD;
+  result
+    += (0.0 + 0.0004 * tMillennia + 0.0004 * tMillennia2 - 0.0026 * tMillennia3) / RAD
 
-  return result;
+  return result
 }
 
 /**
@@ -122,38 +123,38 @@ export function calculateEarthLatitude(
  */
 export function calculateEarthSunDistance(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  const tMillennia = t / 10;
-  const tMillennia2 = tMillennia * tMillennia;
-  const tMillennia3 = tMillennia2 * tMillennia;
+  const tMillennia = t / 10
+  const tMillennia2 = tMillennia * tMillennia
+  const tMillennia3 = tMillennia2 * tMillennia
 
-  let result = 0;
-  let tPower = 1;
+  let result = 0
+  let tPower = 1
 
   for (let i = 0; i < 6; i++) {
-    const data = EARTH_R[i];
+    const data = EARTH_R[i]
     if (data.length > 0) {
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0) {
-        const ratio = data.length / 3 / (EARTH_R[0].length / 3);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = data.length / 3 / (EARTH_R[0].length / 3)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateVSOP87Series(data, tMillennia, n);
-      result += seriesSum * tPower;
+      const seriesSum = calculateVSOP87Series(data, tMillennia, n)
+      result += seriesSum * tPower
     }
-    tPower *= tMillennia;
+    tPower *= tMillennia
   }
 
-  result /= EARTH_MULTIPLIER;
+  result /= EARTH_MULTIPLIER
 
   // 地球距离修正项 (单位: AU/10^6)
   // @see eph0.js:973 对地球距离的修正
-  result +=
-    (-0.002 + 0.0044 * tMillennia + 0.0213 * tMillennia2 - 0.025 * tMillennia3) / 1000000;
+  result
+    += (-0.002 + 0.0044 * tMillennia + 0.0213 * tMillennia2 - 0.025 * tMillennia3) / 1000000
 
-  return result;
+  return result
 }
 
 /**
@@ -170,13 +171,13 @@ export function calculateEarthHeliocentricCoord(
   t: number,
   n1: number = -1,
   n2: number = -1,
-  n3: number = -1
+  n3: number = -1,
 ): SphericalCoord {
   return [
     calculateEarthLongitude(t, n1),
     calculateEarthLatitude(t, n2),
     calculateEarthSunDistance(t, n3),
-  ];
+  ]
 }
 
 /**
@@ -190,15 +191,15 @@ export function calculateEarthHeliocentricCoord(
  */
 export function calculateSolarAberration(t: number): number {
   // 太阳平近点角
-  const meanAnomaly = -0.043126 + 628.301955 * t - 0.000002732 * t * t;
+  const meanAnomaly = -0.043126 + 628.301955 * t - 0.000002732 * t * t
 
   // 地球轨道离心率
-  const eccentricity = 0.016708634 - 0.000042037 * t - 0.0000001267 * t * t;
+  const eccentricity = 0.016708634 - 0.000042037 * t - 0.0000001267 * t * t
 
   // 黄经光行差 (角秒)
-  const aberrationArcsec = -20.49552 * (1 + eccentricity * Math.cos(meanAnomaly));
+  const aberrationArcsec = -20.49552 * (1 + eccentricity * Math.cos(meanAnomaly))
 
-  return aberrationArcsec / RAD;
+  return aberrationArcsec / RAD
 }
 
 /**
@@ -212,9 +213,9 @@ export function calculateSolarAberration(t: number): number {
  */
 export function calculateSunTrueLongitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  return normalizeAngle(calculateEarthLongitude(t, termCount) + Math.PI);
+  return normalizeAngle(calculateEarthLongitude(t, termCount) + Math.PI)
 }
 
 /**
@@ -229,19 +230,19 @@ export function calculateSunTrueLongitude(
  */
 export function calculateSunApparentLongitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
   // 地球黄经 + π = 太阳真黄经
-  const earthLon = calculateEarthLongitude(t, termCount);
-  const sunTrueLon = earthLon + Math.PI;
+  const earthLon = calculateEarthLongitude(t, termCount)
+  const sunTrueLon = earthLon + Math.PI
 
   // 黄经章动
-  const nutationLon = calculateLongitudeNutation(t);
+  const nutationLon = calculateLongitudeNutation(t)
 
   // 光行差
-  const aberration = calculateSolarAberration(t);
+  const aberration = calculateSolarAberration(t)
 
-  return normalizeAngle(sunTrueLon + nutationLon + aberration);
+  return normalizeAngle(sunTrueLon + nutationLon + aberration)
 }
 
 /**
@@ -255,20 +256,20 @@ export function calculateSunApparentLongitude(
  */
 export function calculateSunGeocentricCoord(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): SphericalCoord {
-  const earthCoord = calculateEarthHeliocentricCoord(t, termCount, termCount, termCount);
+  const earthCoord = calculateEarthHeliocentricCoord(t, termCount, termCount, termCount)
 
   // 太阳视黄经
-  const apparentLon = calculateSunApparentLongitude(t, termCount);
+  const apparentLon = calculateSunApparentLongitude(t, termCount)
 
   // 太阳黄纬 (几乎为0，取负的地球黄纬)
-  const apparentLat = -earthCoord[1];
+  const apparentLat = -earthCoord[1]
 
   // 地日距离
-  const distance = earthCoord[2];
+  const distance = earthCoord[2]
 
-  return [apparentLon, apparentLat, distance];
+  return [apparentLon, apparentLat, distance]
 }
 
 /**
@@ -279,15 +280,15 @@ export function calculateSunGeocentricCoord(
  * @returns 黄经变化率 (弧度/世纪)
  */
 export function calculateSunVelocity(t: number): number {
-  const f = 628.307585 * t;
+  const f = 628.307585 * t
   // 返回弧度/世纪
   return (
-    628.332 +
-    21 * Math.sin(1.527 + f) +
-    0.44 * Math.sin(1.48 + f * 2) +
-    0.129 * Math.sin(5.82 + f) * t +
-    0.00055 * Math.sin(4.21 + f) * t * t
-  );
+    628.332
+    + 21 * Math.sin(1.527 + f)
+    + 0.44 * Math.sin(1.48 + f * 2)
+    + 0.129 * Math.sin(5.82 + f) * t
+    + 0.00055 * Math.sin(4.21 + f) * t * t
+  )
 }
 
 /**
@@ -306,27 +307,27 @@ export function calculateSunVelocity(t: number): number {
  * ```
  */
 export function calculateTimeFromSunLongitude(targetLongitude: number): number {
-  const v0 = 628.3319653318; // 太阳平均角速度
+  const v0 = 628.3319653318 // 太阳平均角速度
 
   // 初始估计
-  let t = (targetLongitude - 1.75347 - Math.PI) / v0;
+  let t = (targetLongitude - 1.75347 - Math.PI) / v0
 
   // 迭代精化 - 使用 normalizeAngleSigned 处理角度环绕
-  let v = calculateSunVelocity(t);
-  let diff = normalizeAngleSigned(targetLongitude - calculateSunApparentLongitude(t, 10));
-  t += diff / v;
+  let v = calculateSunVelocity(t)
+  let diff = normalizeAngleSigned(targetLongitude - calculateSunApparentLongitude(t, 10))
+  t += diff / v
 
-  v = calculateSunVelocity(t);
-  diff = normalizeAngleSigned(targetLongitude - calculateSunApparentLongitude(t, -1));
-  t += diff / v;
+  v = calculateSunVelocity(t)
+  diff = normalizeAngleSigned(targetLongitude - calculateSunApparentLongitude(t, -1))
+  t += diff / v
 
-  return t;
+  return t
 }
 
 /**
  * 计算指定年份的二十四节气
  *
- * @param year - 公历年份
+ * @param _year - 公历年份
  * @returns 24个节气的儒略日数组
  *
  * @example
@@ -337,23 +338,23 @@ export function calculateTimeFromSunLongitude(targetLongitude: number): number {
  * ```
  */
 export function calculateSolarTerms(_year: number): number[] {
-  const terms: number[] = [];
+  const terms: number[] = []
 
   // 小寒开始, 黄经270° (即 3π/2)
   // 每个节气间隔15°
   for (let i = 0; i < 24; i++) {
     // 节气对应的太阳黄经 (从小寒270°开始)
-    const longitude = normalizeAngle(((270 + i * 15) * Math.PI) / 180);
+    const longitude = normalizeAngle(((270 + i * 15) * Math.PI) / 180)
 
     // 精确计算时间
-    const t = calculateTimeFromSunLongitude(longitude);
+    const t = calculateTimeFromSunLongitude(longitude)
 
     // 转换为儒略日 (J2000起算)
-    const jd = t * 36525 + 2451545;
-    terms.push(jd);
+    const jd = t * 36525 + 2451545
+    terms.push(jd)
   }
 
-  return terms;
+  return terms
 }
 
 /**
@@ -384,7 +385,7 @@ export const SOLAR_TERM_NAMES_CN = [
   '小雪',
   '大雪',
   '冬至',
-] as const;
+] as const
 
 /**
  * 二十四节气名称 (英文)
@@ -414,4 +415,4 @@ export const SOLAR_TERM_NAMES_EN = [
   'Minor Snow',
   'Major Snow',
   'Winter Solstice',
-] as const;
+] as const

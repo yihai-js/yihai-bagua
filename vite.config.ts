@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
-import dts from 'vite-plugin-dts';
+import { resolve } from 'node:path'
+import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   plugins: [
@@ -12,7 +12,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        index: resolve(__dirname, 'src/index.ts'),
+        'index': resolve(__dirname, 'src/index.ts'),
         'core/index': resolve(__dirname, 'src/core/index.ts'),
         'lunar/index': resolve(__dirname, 'src/lunar/index.ts'),
         'eclipse/index': resolve(__dirname, 'src/eclipse/index.ts'),
@@ -22,8 +22,9 @@ export default defineConfig({
       },
       formats: ['es', 'cjs'],
       fileName: (format, entryName) => {
-        if (format === 'es') return `${entryName}.js`;
-        return `${entryName}.cjs`;
+        if (format === 'es')
+          return `${entryName}.js`
+        return `${entryName}.cjs`
       },
     },
     rollupOptions: {
@@ -32,4 +33,4 @@ export default defineConfig({
       },
     },
   },
-});
+})

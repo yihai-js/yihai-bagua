@@ -8,14 +8,14 @@
  * 缓存节点（内部使用）
  */
 class CacheNode<K, V> {
-  key: K;
-  value: V;
-  prev: CacheNode<K, V> | null = null;
-  next: CacheNode<K, V> | null = null;
+  key: K
+  value: V
+  prev: CacheNode<K, V> | null = null
+  next: CacheNode<K, V> | null = null
 
   constructor(key: K, value: V) {
-    this.key = key;
-    this.value = value;
+    this.key = key
+    this.value = value
   }
 }
 
@@ -35,12 +35,12 @@ class CacheNode<K, V> {
  * ```
  */
 export class LRUCache<K, V> {
-  private capacity: number;
-  private cache: Map<K, CacheNode<K, V>>;
-  private head: CacheNode<K, V> | null = null;
-  private tail: CacheNode<K, V> | null = null;
-  private hits: number = 0;
-  private misses: number = 0;
+  private capacity: number
+  private cache: Map<K, CacheNode<K, V>>
+  private head: CacheNode<K, V> | null = null
+  private tail: CacheNode<K, V> | null = null
+  private hits: number = 0
+  private misses: number = 0
 
   /**
    * 创建 LRU 缓存实例
@@ -48,8 +48,8 @@ export class LRUCache<K, V> {
    * @param capacity - 缓存容量，默认 100
    */
   constructor(capacity: number = 100) {
-    this.capacity = capacity;
-    this.cache = new Map();
+    this.capacity = capacity
+    this.cache = new Map()
   }
 
   /**
@@ -59,16 +59,16 @@ export class LRUCache<K, V> {
    * @returns 缓存值，如果不存在则返回 undefined
    */
   get(key: K): V | undefined {
-    const node = this.cache.get(key);
+    const node = this.cache.get(key)
     if (!node) {
-      this.misses++;
-      return undefined;
+      this.misses++
+      return undefined
     }
 
-    this.hits++;
+    this.hits++
     // 移动到头部（最近使用）
-    this.moveToHead(node);
-    return node.value;
+    this.moveToHead(node)
+    return node.value
   }
 
   /**
@@ -78,23 +78,23 @@ export class LRUCache<K, V> {
    * @param value - 缓存值
    */
   set(key: K, value: V): void {
-    const existingNode = this.cache.get(key);
+    const existingNode = this.cache.get(key)
 
     if (existingNode) {
       // 更新已存在的节点
-      existingNode.value = value;
-      this.moveToHead(existingNode);
-      return;
+      existingNode.value = value
+      this.moveToHead(existingNode)
+      return
     }
 
     // 创建新节点
-    const newNode = new CacheNode(key, value);
-    this.cache.set(key, newNode);
-    this.addToHead(newNode);
+    const newNode = new CacheNode(key, value)
+    this.cache.set(key, newNode)
+    this.addToHead(newNode)
 
     // 检查是否需要淘汰
     if (this.cache.size > this.capacity) {
-      this.evictLRU();
+      this.evictLRU()
     }
   }
 
@@ -105,14 +105,14 @@ export class LRUCache<K, V> {
    * @returns 是否删除成功
    */
   delete(key: K): boolean {
-    const node = this.cache.get(key);
+    const node = this.cache.get(key)
     if (!node) {
-      return false;
+      return false
     }
 
-    this.removeNode(node);
-    this.cache.delete(key);
-    return true;
+    this.removeNode(node)
+    this.cache.delete(key)
+    return true
   }
 
   /**
@@ -124,25 +124,25 @@ export class LRUCache<K, V> {
    * @returns 是否存在
    */
   has(key: K): boolean {
-    return this.cache.has(key);
+    return this.cache.has(key)
   }
 
   /**
    * 清空缓存
    */
   clear(): void {
-    this.cache.clear();
-    this.head = null;
-    this.tail = null;
-    this.hits = 0;
-    this.misses = 0;
+    this.cache.clear()
+    this.head = null
+    this.tail = null
+    this.hits = 0
+    this.misses = 0
   }
 
   /**
    * 获取缓存大小
    */
   get size(): number {
-    return this.cache.size;
+    return this.cache.size
   }
 
   /**
@@ -151,11 +151,11 @@ export class LRUCache<K, V> {
    * @returns 命中率 (0-1)，如果没有访问则返回 0
    */
   getHitRate(): number {
-    const total = this.hits + this.misses;
+    const total = this.hits + this.misses
     if (total === 0) {
-      return 0;
+      return 0
     }
-    return this.hits / total;
+    return this.hits / total
   }
 
   /**
@@ -164,11 +164,11 @@ export class LRUCache<K, V> {
    * @returns 统计信息对象
    */
   getStats(): {
-    size: number;
-    capacity: number;
-    hits: number;
-    misses: number;
-    hitRate: number;
+    size: number
+    capacity: number
+    hits: number
+    misses: number
+    hitRate: number
   } {
     return {
       size: this.size,
@@ -176,7 +176,7 @@ export class LRUCache<K, V> {
       hits: this.hits,
       misses: this.misses,
       hitRate: this.getHitRate(),
-    };
+    }
   }
 
   /**
@@ -184,28 +184,28 @@ export class LRUCache<K, V> {
    */
   private moveToHead(node: CacheNode<K, V>): void {
     if (node === this.head) {
-      return;
+      return
     }
 
-    this.removeNode(node);
-    this.addToHead(node);
+    this.removeNode(node)
+    this.addToHead(node)
   }
 
   /**
    * 将节点添加到头部
    */
   private addToHead(node: CacheNode<K, V>): void {
-    node.prev = null;
-    node.next = this.head;
+    node.prev = null
+    node.next = this.head
 
     if (this.head) {
-      this.head.prev = node;
+      this.head.prev = node
     }
 
-    this.head = node;
+    this.head = node
 
     if (!this.tail) {
-      this.tail = node;
+      this.tail = node
     }
   }
 
@@ -214,19 +214,21 @@ export class LRUCache<K, V> {
    */
   private removeNode(node: CacheNode<K, V>): void {
     if (node.prev) {
-      node.prev.next = node.next;
-    } else {
-      this.head = node.next;
+      node.prev.next = node.next
+    }
+    else {
+      this.head = node.next
     }
 
     if (node.next) {
-      node.next.prev = node.prev;
-    } else {
-      this.tail = node.prev;
+      node.next.prev = node.prev
+    }
+    else {
+      this.tail = node.prev
     }
 
-    node.prev = null;
-    node.next = null;
+    node.prev = null
+    node.next = null
   }
 
   /**
@@ -234,12 +236,12 @@ export class LRUCache<K, V> {
    */
   private evictLRU(): void {
     if (!this.tail) {
-      return;
+      return
     }
 
-    const lruNode = this.tail;
-    this.removeNode(lruNode);
-    this.cache.delete(lruNode.key);
+    const lruNode = this.tail
+    this.removeNode(lruNode)
+    this.cache.delete(lruNode.key)
   }
 }
 
@@ -248,9 +250,9 @@ export class LRUCache<K, V> {
  */
 export interface MemoizeOptions<Args extends unknown[]> {
   /** 缓存大小，默认 100 */
-  cacheSize?: number;
+  cacheSize?: number
   /** 自定义键生成器 */
-  keyGenerator?: (...args: Args) => string;
+  keyGenerator?: (...args: Args) => string
 }
 
 /**
@@ -259,7 +261,7 @@ export interface MemoizeOptions<Args extends unknown[]> {
  * 将参数转换为 JSON 字符串作为缓存键
  */
 function defaultKeyGenerator<Args extends unknown[]>(...args: Args): string {
-  return JSON.stringify(args);
+  return JSON.stringify(args)
 }
 
 /**
@@ -293,27 +295,27 @@ function defaultKeyGenerator<Args extends unknown[]>(...args: Args): string {
  */
 export function memoize<Args extends unknown[], Return>(
   fn: (...args: Args) => Return,
-  options?: MemoizeOptions<Args>
+  options?: MemoizeOptions<Args>,
 ): (...args: Args) => Return {
-  const cacheSize = options?.cacheSize ?? 100;
-  const keyGenerator = options?.keyGenerator ?? defaultKeyGenerator;
-  const cache = new LRUCache<string, Return>(cacheSize);
+  const cacheSize = options?.cacheSize ?? 100
+  const keyGenerator = options?.keyGenerator ?? defaultKeyGenerator
+  const cache = new LRUCache<string, Return>(cacheSize)
 
   return (...args: Args): Return => {
-    const key = keyGenerator(...args);
-    const cached = cache.get(key);
+    const key = keyGenerator(...args)
+    const cached = cache.get(key)
 
     if (cached !== undefined) {
-      return cached;
+      return cached
     }
 
     // 检查是否已缓存但值为 undefined（使用 has 方法）
     if (cache.has(key)) {
-      return cached as Return;
+      return cached as Return
     }
 
-    const result = fn(...args);
-    cache.set(key, result);
-    return result;
-  };
+    const result = fn(...args)
+    cache.set(key, result)
+    return result
+  }
 }

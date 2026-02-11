@@ -2,18 +2,20 @@
  * 天文API模块测试 - Astronomy API Tests
  */
 
-import { describe, it, expect } from 'vitest';
-import {
-  getSunPosition,
-  getMoonPosition,
-  getPlanetPosition,
-  getSunTimes,
-  getMoonTimes,
-  getMoonPhase,
-  getSolarTerms,
-  Planet,
+import type {
   ObserverLocation,
-} from '../../src/astronomy';
+} from '../../src/astronomy'
+import { describe, expect, it } from 'vitest'
+import {
+  getMoonPhase,
+  getMoonPosition,
+  getMoonTimes,
+  getPlanetPosition,
+  getSolarTerms,
+  getSunPosition,
+  getSunTimes,
+  Planet,
+} from '../../src/astronomy'
 
 describe('天文API - Astronomy API', () => {
   // 北京观测点
@@ -21,292 +23,312 @@ describe('天文API - Astronomy API', () => {
     longitude: 116.4,
     latitude: 39.9,
     altitude: 50,
-  };
+  }
 
   describe('getSunPosition', () => {
     it('应返回太阳位置信息', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getSunPosition(date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getSunPosition(date)
 
       // 检查返回的属性
-      expect(position).toHaveProperty('longitude');
-      expect(position).toHaveProperty('latitude');
-      expect(position).toHaveProperty('rightAscension');
-      expect(position).toHaveProperty('declination');
-      expect(position).toHaveProperty('distance');
-    });
+      expect(position).toHaveProperty('longitude')
+      expect(position).toHaveProperty('latitude')
+      expect(position).toHaveProperty('rightAscension')
+      expect(position).toHaveProperty('declination')
+      expect(position).toHaveProperty('distance')
+    })
 
     it('夏至时太阳黄经应约为90度', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getSunPosition(date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getSunPosition(date)
 
       // 夏至太阳黄经约90度
-      expect(position.longitude).toBeCloseTo(90, 0);
-    });
+      expect(position.longitude).toBeCloseTo(90, 0)
+    })
 
     it('冬至时太阳黄经应约为270度', () => {
-      const date = new Date('2024-12-21T12:00:00');
-      const position = getSunPosition(date);
+      const date = new Date('2024-12-21T12:00:00')
+      const position = getSunPosition(date)
 
       // 冬至太阳黄经约270度
-      expect(position.longitude).toBeCloseTo(270, 0);
-    });
+      expect(position.longitude).toBeCloseTo(270, 0)
+    })
 
     it('提供观测地点时应返回地平坐标', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getSunPosition(date, beijing);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getSunPosition(date, beijing)
 
-      expect(position.azimuth).toBeDefined();
-      expect(position.altitude).toBeDefined();
+      expect(position.azimuth).toBeDefined()
+      expect(position.altitude).toBeDefined()
       // 中午时分太阳应该在地平线以上
-      expect(position.altitude).toBeGreaterThan(0);
-    });
-  });
+      expect(position.altitude).toBeGreaterThan(0)
+    })
+  })
 
   describe('getMoonPosition', () => {
     it('应返回月球位置信息', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getMoonPosition(date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getMoonPosition(date)
 
-      expect(position).toHaveProperty('longitude');
-      expect(position).toHaveProperty('latitude');
-      expect(position).toHaveProperty('rightAscension');
-      expect(position).toHaveProperty('declination');
-      expect(position).toHaveProperty('distance');
-    });
+      expect(position).toHaveProperty('longitude')
+      expect(position).toHaveProperty('latitude')
+      expect(position).toHaveProperty('rightAscension')
+      expect(position).toHaveProperty('declination')
+      expect(position).toHaveProperty('distance')
+    })
 
     it('月球黄经应在0-360度范围内', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getMoonPosition(date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getMoonPosition(date)
 
-      expect(position.longitude).toBeGreaterThanOrEqual(0);
-      expect(position.longitude).toBeLessThan(360);
-    });
+      expect(position.longitude).toBeGreaterThanOrEqual(0)
+      expect(position.longitude).toBeLessThan(360)
+    })
 
     it('提供观测地点时应返回地平坐标', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getMoonPosition(date, beijing);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getMoonPosition(date, beijing)
 
-      expect(position.azimuth).toBeDefined();
-      expect(position.altitude).toBeDefined();
-    });
-  });
+      expect(position.azimuth).toBeDefined()
+      expect(position.altitude).toBeDefined()
+    })
+  })
 
   describe('getPlanetPosition', () => {
     it('应返回火星位置信息', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getPlanetPosition(Planet.Mars, date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getPlanetPosition(Planet.Mars, date)
 
-      expect(position).toHaveProperty('longitude');
-      expect(position).toHaveProperty('latitude');
-      expect(position).toHaveProperty('magnitude');
-      expect(position).toHaveProperty('phaseAngle');
-    });
+      expect(position).toHaveProperty('longitude')
+      expect(position).toHaveProperty('latitude')
+      expect(position).toHaveProperty('magnitude')
+      expect(position).toHaveProperty('phaseAngle')
+    })
 
     it('应返回木星位置信息', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getPlanetPosition(Planet.Jupiter, date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getPlanetPosition(Planet.Jupiter, date)
 
-      expect(position.longitude).toBeGreaterThanOrEqual(0);
-      expect(position.longitude).toBeLessThan(360);
+      expect(position.longitude).toBeGreaterThanOrEqual(0)
+      expect(position.longitude).toBeLessThan(360)
       // 木星较亮，星等通常在 -3 到 -1 之间
-      expect(position.magnitude).toBeLessThan(0);
-    });
+      expect(position.magnitude).toBeLessThan(0)
+    })
 
     it('应返回金星位置信息', () => {
-      const date = new Date('2024-06-21T12:00:00');
-      const position = getPlanetPosition(Planet.Venus, date);
+      const date = new Date('2024-06-21T12:00:00')
+      const position = getPlanetPosition(Planet.Venus, date)
 
       // 金星是最亮的行星
-      expect(position.magnitude).toBeLessThan(0);
-    });
-  });
+      expect(position.magnitude).toBeLessThan(0)
+    })
+  })
 
   describe('getSunTimes', () => {
     it('应返回日出日落时刻', () => {
-      const date = new Date('2024-06-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getSunTimes(date, beijing)
 
-      expect(times.rise).toBeInstanceOf(Date);
-      expect(times.transit).toBeInstanceOf(Date);
-      expect(times.set).toBeInstanceOf(Date);
-    });
+      expect(times.rise).toBeInstanceOf(Date)
+      expect(times.transit).toBeInstanceOf(Date)
+      expect(times.set).toBeInstanceOf(Date)
+    })
 
     it('日出应早于日落', () => {
-      const date = new Date('2024-06-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getSunTimes(date, beijing)
 
-      expect(times.rise!.getTime()).toBeLessThan(times.transit!.getTime());
-      expect(times.transit!.getTime()).toBeLessThan(times.set!.getTime());
-    });
+      expect(times.rise!.getTime()).toBeLessThan(times.transit!.getTime())
+      expect(times.transit!.getTime()).toBeLessThan(times.set!.getTime())
+    })
 
     it('夏至日昼长应大于12小时', () => {
-      const date = new Date('2024-06-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getSunTimes(date, beijing)
 
-      const dayLength = (times.set!.getTime() - times.rise!.getTime()) / (1000 * 3600);
-      expect(dayLength).toBeGreaterThan(14); // 北京夏至昼长约14-15小时
-    });
+      const dayLength = (times.set!.getTime() - times.rise!.getTime()) / (1000 * 3600)
+      expect(dayLength).toBeGreaterThan(14) // 北京夏至昼长约14-15小时
+    })
 
     it('冬至日昼长应小于12小时', () => {
-      const date = new Date('2024-12-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-12-21')
+      const times = getSunTimes(date, beijing)
 
-      const dayLength = (times.set!.getTime() - times.rise!.getTime()) / (1000 * 3600);
-      expect(dayLength).toBeLessThan(10); // 北京冬至昼长约9-10小时
-    });
+      const dayLength = (times.set!.getTime() - times.rise!.getTime()) / (1000 * 3600)
+      expect(dayLength).toBeLessThan(10) // 北京冬至昼长约9-10小时
+    })
 
     it('应返回民用晨昏光时刻', () => {
-      const date = new Date('2024-06-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getSunTimes(date, beijing)
 
-      expect(times.civilDawn).toBeInstanceOf(Date);
-      expect(times.civilDusk).toBeInstanceOf(Date);
+      expect(times.civilDawn).toBeInstanceOf(Date)
+      expect(times.civilDusk).toBeInstanceOf(Date)
       // 民用晨光始应早于日出
-      expect(times.civilDawn!.getTime()).toBeLessThan(times.rise!.getTime());
+      expect(times.civilDawn!.getTime()).toBeLessThan(times.rise!.getTime())
       // 民用昏影终应晚于日落
-      expect(times.civilDusk!.getTime()).toBeGreaterThan(times.set!.getTime());
-    });
+      expect(times.civilDusk!.getTime()).toBeGreaterThan(times.set!.getTime())
+    })
 
     it('应返回航海晨昏光时刻', () => {
-      const date = new Date('2024-06-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getSunTimes(date, beijing)
 
-      expect(times.nauticalDawn).toBeInstanceOf(Date);
-      expect(times.nauticalDusk).toBeInstanceOf(Date);
+      expect(times.nauticalDawn).toBeInstanceOf(Date)
+      expect(times.nauticalDusk).toBeInstanceOf(Date)
       // 航海晨光始应早于民用晨光始
-      expect(times.nauticalDawn!.getTime()).toBeLessThan(times.civilDawn!.getTime());
+      expect(times.nauticalDawn!.getTime()).toBeLessThan(times.civilDawn!.getTime())
       // 航海昏影终应晚于民用昏影终
-      expect(times.nauticalDusk!.getTime()).toBeGreaterThan(times.civilDusk!.getTime());
-    });
+      expect(times.nauticalDusk!.getTime()).toBeGreaterThan(times.civilDusk!.getTime())
+    })
 
     it('应返回天文晨昏光时刻', () => {
-      const date = new Date('2024-06-21');
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getSunTimes(date, beijing)
 
-      expect(times.astronomicalDawn).toBeInstanceOf(Date);
-      expect(times.astronomicalDusk).toBeInstanceOf(Date);
+      expect(times.astronomicalDawn).toBeInstanceOf(Date)
+      expect(times.astronomicalDusk).toBeInstanceOf(Date)
       // 天文晨光始应早于航海晨光始
-      expect(times.astronomicalDawn!.getTime()).toBeLessThan(times.nauticalDawn!.getTime());
+      expect(times.astronomicalDawn!.getTime()).toBeLessThan(times.nauticalDawn!.getTime())
       // 天文昏影终应晚于航海昏影终
-      expect(times.astronomicalDusk!.getTime()).toBeGreaterThan(times.nauticalDusk!.getTime());
-    });
+      expect(times.astronomicalDusk!.getTime()).toBeGreaterThan(times.nauticalDusk!.getTime())
+    })
 
     it('晨昏光顺序应正确', () => {
-      const date = new Date('2024-03-20'); // 春分，日照时间适中
-      const times = getSunTimes(date, beijing);
+      const date = new Date('2024-03-20') // 春分，日照时间适中
+      const times = getSunTimes(date, beijing)
 
       // 早晨顺序：天文晨光 < 航海晨光 < 民用晨光 < 日出
-      expect(times.astronomicalDawn!.getTime()).toBeLessThan(times.nauticalDawn!.getTime());
-      expect(times.nauticalDawn!.getTime()).toBeLessThan(times.civilDawn!.getTime());
-      expect(times.civilDawn!.getTime()).toBeLessThan(times.rise!.getTime());
+      expect(times.astronomicalDawn!.getTime()).toBeLessThan(times.nauticalDawn!.getTime())
+      expect(times.nauticalDawn!.getTime()).toBeLessThan(times.civilDawn!.getTime())
+      expect(times.civilDawn!.getTime()).toBeLessThan(times.rise!.getTime())
 
       // 傍晚顺序：日落 < 民用昏影 < 航海昏影 < 天文昏影
-      expect(times.set!.getTime()).toBeLessThan(times.civilDusk!.getTime());
-      expect(times.civilDusk!.getTime()).toBeLessThan(times.nauticalDusk!.getTime());
-      expect(times.nauticalDusk!.getTime()).toBeLessThan(times.astronomicalDusk!.getTime());
-    });
-  });
+      expect(times.set!.getTime()).toBeLessThan(times.civilDusk!.getTime())
+      expect(times.civilDusk!.getTime()).toBeLessThan(times.nauticalDusk!.getTime())
+      expect(times.nauticalDusk!.getTime()).toBeLessThan(times.astronomicalDusk!.getTime())
+    })
+  })
 
   describe('getMoonTimes', () => {
     it('应返回月升月落时刻', () => {
-      const date = new Date('2024-06-21');
-      const times = getMoonTimes(date, beijing);
+      const date = new Date('2024-06-21')
+      const times = getMoonTimes(date, beijing)
 
       // 月升月落可能有null（月球可能整天可见或不可见）
-      expect(times).toHaveProperty('rise');
-      expect(times).toHaveProperty('transit');
-      expect(times).toHaveProperty('set');
-    });
-  });
+      expect(times).toHaveProperty('rise')
+      expect(times).toHaveProperty('transit')
+      expect(times).toHaveProperty('set')
+    })
+  })
 
   describe('getMoonPhase', () => {
     it('应返回月相信息', () => {
-      const date = new Date('2024-06-21');
-      const phase = getMoonPhase(date);
+      const date = new Date('2024-06-21')
+      const phase = getMoonPhase(date)
 
-      expect(phase).toHaveProperty('phase');
-      expect(phase).toHaveProperty('name');
-      expect(phase).toHaveProperty('illumination');
-      expect(phase).toHaveProperty('nextNewMoon');
-      expect(phase).toHaveProperty('nextFullMoon');
-    });
+      expect(phase).toHaveProperty('phase')
+      expect(phase).toHaveProperty('name')
+      expect(phase).toHaveProperty('illumination')
+      expect(phase).toHaveProperty('nextNewMoon')
+      expect(phase).toHaveProperty('nextFullMoon')
+    })
 
     it('月相角度应在0-360度范围内', () => {
-      const date = new Date('2024-06-21');
-      const phase = getMoonPhase(date);
+      const date = new Date('2024-06-21')
+      const phase = getMoonPhase(date)
 
-      expect(phase.phase).toBeGreaterThanOrEqual(0);
-      expect(phase.phase).toBeLessThan(360);
-    });
+      expect(phase.phase).toBeGreaterThanOrEqual(0)
+      expect(phase.phase).toBeLessThan(360)
+    })
 
     it('光照比例应在0-1范围内', () => {
-      const date = new Date('2024-06-21');
-      const phase = getMoonPhase(date);
+      const date = new Date('2024-06-21')
+      const phase = getMoonPhase(date)
 
-      expect(phase.illumination).toBeGreaterThanOrEqual(0);
-      expect(phase.illumination).toBeLessThanOrEqual(1);
-    });
+      expect(phase.illumination).toBeGreaterThanOrEqual(0)
+      expect(phase.illumination).toBeLessThanOrEqual(1)
+    })
 
     it('应返回有效的月相名称', () => {
-      const validNames = ['新月', '蛾眉月', '上弦月', '盈凸月', '满月', '亏凸月', '下弦月', '残月'];
-      const date = new Date('2024-06-21');
-      const phase = getMoonPhase(date);
+      const validNames = ['新月', '蛾眉月', '上弦月', '盈凸月', '满月', '亏凸月', '下弦月', '残月']
+      const date = new Date('2024-06-21')
+      const phase = getMoonPhase(date)
 
-      expect(validNames).toContain(phase.name);
-    });
-  });
+      expect(validNames).toContain(phase.name)
+    })
+  })
 
   describe('getSolarTerms', () => {
     it('应返回24个节气', () => {
-      const terms = getSolarTerms(2024);
+      const terms = getSolarTerms(2024)
 
-      expect(terms.length).toBe(24);
-    });
+      expect(terms.length).toBe(24)
+    })
 
     it('应包含所有24节气名称', () => {
-      const terms = getSolarTerms(2024);
+      const terms = getSolarTerms(2024)
       const expectedNames = [
-        '冬至', '小寒', '大寒', '立春', '雨水', '惊蛰',
-        '春分', '清明', '谷雨', '立夏', '小满', '芒种',
-        '夏至', '小暑', '大暑', '立秋', '处暑', '白露',
-        '秋分', '寒露', '霜降', '立冬', '小雪', '大雪',
-      ];
+        '冬至',
+        '小寒',
+        '大寒',
+        '立春',
+        '雨水',
+        '惊蛰',
+        '春分',
+        '清明',
+        '谷雨',
+        '立夏',
+        '小满',
+        '芒种',
+        '夏至',
+        '小暑',
+        '大暑',
+        '立秋',
+        '处暑',
+        '白露',
+        '秋分',
+        '寒露',
+        '霜降',
+        '立冬',
+        '小雪',
+        '大雪',
+      ]
 
-      const termNames = terms.map((t) => t.name);
+      const termNames = terms.map(t => t.name)
       for (const name of expectedNames) {
-        expect(termNames).toContain(name);
+        expect(termNames).toContain(name)
       }
-    });
+    })
 
     it('春分应在3月左右', () => {
-      const terms = getSolarTerms(2024);
-      const chunfen = terms.find((t) => t.name === '春分');
+      const terms = getSolarTerms(2024)
+      const chunfen = terms.find(t => t.name === '春分')
 
-      expect(chunfen).toBeDefined();
+      expect(chunfen).toBeDefined()
       // 春分在3月
-      expect(chunfen!.date.getMonth()).toBeGreaterThanOrEqual(2); // 3月 (0-indexed)
-      expect(chunfen!.date.getMonth()).toBeLessThanOrEqual(3); // 最晚4月
-    });
+      expect(chunfen!.date.getMonth()).toBeGreaterThanOrEqual(2) // 3月 (0-indexed)
+      expect(chunfen!.date.getMonth()).toBeLessThanOrEqual(3) // 最晚4月
+    })
 
     it('夏至应在6月左右', () => {
-      const terms = getSolarTerms(2024);
-      const xiazhi = terms.find((t) => t.name === '夏至');
+      const terms = getSolarTerms(2024)
+      const xiazhi = terms.find(t => t.name === '夏至')
 
-      expect(xiazhi).toBeDefined();
+      expect(xiazhi).toBeDefined()
       // 夏至在6月
-      expect(xiazhi!.date.getMonth()).toBeGreaterThanOrEqual(5); // 6月 (0-indexed)
-      expect(xiazhi!.date.getMonth()).toBeLessThanOrEqual(6); // 最晚7月
-    });
+      expect(xiazhi!.date.getMonth()).toBeGreaterThanOrEqual(5) // 6月 (0-indexed)
+      expect(xiazhi!.date.getMonth()).toBeLessThanOrEqual(6) // 最晚7月
+    })
 
     it('冬至应在12月或1月左右', () => {
-      const terms = getSolarTerms(2024);
-      const dongzhi = terms.find((t) => t.name === '冬至');
+      const terms = getSolarTerms(2024)
+      const dongzhi = terms.find(t => t.name === '冬至')
 
-      expect(dongzhi).toBeDefined();
+      expect(dongzhi).toBeDefined()
       // 冬至在12月或下一年1月
-      const month = dongzhi!.date.getMonth();
-      expect(month === 11 || month === 0).toBe(true); // 12月或1月
-    });
-  });
-});
+      const month = dongzhi!.date.getMonth()
+      expect(month === 11 || month === 0).toBe(true) // 12月或1月
+    })
+  })
+})

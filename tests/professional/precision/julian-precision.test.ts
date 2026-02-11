@@ -7,8 +7,8 @@
  * 所有标准测试值均来自算法文档，用于验证儒略日计算的精确性
  */
 
-import { describe, it, expect } from 'vitest';
-import { gregorianToJD, jdToGregorian, getWeekDay } from '../../../src/core/julian';
+import { describe, expect, it } from 'vitest'
+import { getWeekDay, gregorianToJD, jdToGregorian } from '../../../src/core/julian'
 
 /**
  * 《天文算法》标准儒略日测试数据
@@ -22,15 +22,15 @@ import { gregorianToJD, jdToGregorian, getWeekDay } from '../../../src/core/juli
  */
 interface JulianTestCase {
   /** 测试用例描述 */
-  description: string;
+  description: string
   /** 年份（天文年份） */
-  year: number;
+  year: number
   /** 月份 */
-  month: number;
+  month: number
   /** 日期（可含小数表示时间） */
-  day: number;
+  day: number
   /** 期望的儒略日 */
-  expectedJD: number;
+  expectedJD: number
 }
 
 describe('儒略日精度验证 - 《天文算法》标准测试值', () => {
@@ -130,105 +130,105 @@ describe('儒略日精度验证 - 《天文算法》标准测试值', () => {
       day: 1.5,
       expectedJD: 0.0,
     },
-  ];
+  ]
 
   describe('公历转儒略日 - 标准值精确匹配', () => {
     standardTestCases.forEach(({ description, year, month, day, expectedJD }) => {
       it(`${description} => JD ${expectedJD}`, () => {
-        const actualJD = gregorianToJD(year, month, day);
+        const actualJD = gregorianToJD(year, month, day)
         // 精度要求：至少小数点后5位（约0.86秒精度）
-        expect(actualJD).toBeCloseTo(expectedJD, 5);
-      });
-    });
-  });
+        expect(actualJD).toBeCloseTo(expectedJD, 5)
+      })
+    })
+  })
 
   describe('儒略日转公历 - 逆向验证', () => {
     standardTestCases.forEach(({ description, year, month, day, expectedJD }) => {
       it(`JD ${expectedJD} => ${description}`, () => {
-        const result = jdToGregorian(expectedJD);
+        const result = jdToGregorian(expectedJD)
 
         // 验证年份
-        expect(result.year).toBe(year);
+        expect(result.year).toBe(year)
 
         // 验证月份
-        expect(result.month).toBe(month);
+        expect(result.month).toBe(month)
 
         // 验证日期（整数部分）
-        const expectedDay = Math.floor(day);
-        expect(result.day).toBe(expectedDay);
+        const expectedDay = Math.floor(day)
+        expect(result.day).toBe(expectedDay)
 
         // 验证时间（日期的小数部分）
-        const dayFraction = day - expectedDay;
-        const expectedHour = Math.floor(dayFraction * 24);
-        expect(result.hour).toBe(expectedHour);
-      });
-    });
-  });
+        const dayFraction = day - expectedDay
+        const expectedHour = Math.floor(dayFraction * 24)
+        expect(result.hour).toBe(expectedHour)
+      })
+    })
+  })
 
   describe('往返转换测试 - 公历 => 儒略日 => 公历', () => {
     standardTestCases.forEach(({ description, year, month, day }) => {
       it(`往返转换: ${description}`, () => {
         // 公历 => 儒略日
-        const jd = gregorianToJD(year, month, day);
+        const jd = gregorianToJD(year, month, day)
 
         // 儒略日 => 公历
-        const result = jdToGregorian(jd);
+        const result = jdToGregorian(jd)
 
         // 重构为儒略日
-        const dayFraction =
-          ((result.second / 60 + result.minute) / 60 + result.hour) / 24;
+        const dayFraction
+          = ((result.second / 60 + result.minute) / 60 + result.hour) / 24
         const reconstructedJD = gregorianToJD(
           result.year,
           result.month,
-          result.day + dayFraction
-        );
+          result.day + dayFraction,
+        )
 
         // 验证往返一致性（精度至少8位小数）
-        expect(reconstructedJD).toBeCloseTo(jd, 8);
-      });
-    });
-  });
-});
+        expect(reconstructedJD).toBeCloseTo(jd, 8)
+      })
+    })
+  })
+})
 
 describe('儒略日边界情况测试', () => {
   describe('儒略日起点 (JD = 0)', () => {
-    it('JD 0 应对应公元前4713年1月1日12时（儒略历）', () => {
-      const result = jdToGregorian(0);
-      expect(result.year).toBe(-4712);
-      expect(result.month).toBe(1);
-      expect(result.day).toBe(1);
-      expect(result.hour).toBe(12);
-    });
+    it('jD 0 应对应公元前4713年1月1日12时（儒略历）', () => {
+      const result = jdToGregorian(0)
+      expect(result.year).toBe(-4712)
+      expect(result.month).toBe(1)
+      expect(result.day).toBe(1)
+      expect(result.hour).toBe(12)
+    })
 
     it('公元前4713年1月1.5日应转换为 JD 0', () => {
-      const jd = gregorianToJD(-4712, 1, 1.5);
-      expect(jd).toBeCloseTo(0, 1);
-    });
-  });
+      const jd = gregorianToJD(-4712, 1, 1.5)
+      expect(jd).toBeCloseTo(0, 1)
+    })
+  })
 
   describe('远古年份测试', () => {
     it('公元前2000年 (年份 -1999)', () => {
-      const jd = gregorianToJD(-1999, 6, 15.5);
-      expect(jd).toBeDefined();
-      expect(typeof jd).toBe('number');
-      expect(jd).toBeGreaterThan(0);
-      expect(jd).toBeLessThan(1000000);
+      const jd = gregorianToJD(-1999, 6, 15.5)
+      expect(jd).toBeDefined()
+      expect(typeof jd).toBe('number')
+      expect(jd).toBeGreaterThan(0)
+      expect(jd).toBeLessThan(1000000)
 
       // 验证往返转换
-      const result = jdToGregorian(jd);
-      expect(result.year).toBe(-1999);
-      expect(result.month).toBe(6);
-    });
+      const result = jdToGregorian(jd)
+      expect(result.year).toBe(-1999)
+      expect(result.month).toBe(6)
+    })
 
     it('公元前3000年 (年份 -2999)', () => {
-      const jd = gregorianToJD(-2999, 1, 1.0);
-      expect(jd).toBeDefined();
-      expect(jd).toBeGreaterThan(0);
+      const jd = gregorianToJD(-2999, 1, 1.0)
+      expect(jd).toBeDefined()
+      expect(jd).toBeGreaterThan(0)
 
-      const result = jdToGregorian(jd);
-      expect(result.year).toBe(-2999);
-    });
-  });
+      const result = jdToGregorian(jd)
+      expect(result.year).toBe(-2999)
+    })
+  })
 
   describe('未来年份测试', () => {
     /**
@@ -236,47 +236,47 @@ describe('儒略日边界情况测试', () => {
      * JD_3000_JAN_1: 公元3000年1月1日12时的儒略日约为2816787.5
      * JD_5000_JAN_1: 公元5000年1月1日12时的儒略日约为3547578.5
      */
-    const JD_3000_JAN_1 = 2816787; // 公元3000年1月1日0时的儒略日下界
-    const JD_5000_JAN_1 = 3547000; // 公元5000年1月1日0时的儒略日下界
+    const JD_3000_JAN_1 = 2816787 // 公元3000年1月1日0时的儒略日下界
+    const JD_5000_JAN_1 = 3547000 // 公元5000年1月1日0时的儒略日下界
 
     it('公元3000年', () => {
-      const jd = gregorianToJD(3000, 1, 1.5);
-      expect(jd).toBeGreaterThan(JD_3000_JAN_1);
+      const jd = gregorianToJD(3000, 1, 1.5)
+      expect(jd).toBeGreaterThan(JD_3000_JAN_1)
 
-      const result = jdToGregorian(jd);
-      expect(result.year).toBe(3000);
-      expect(result.month).toBe(1);
-      expect(result.day).toBe(1);
-    });
+      const result = jdToGregorian(jd)
+      expect(result.year).toBe(3000)
+      expect(result.month).toBe(1)
+      expect(result.day).toBe(1)
+    })
 
     it('公元5000年', () => {
-      const jd = gregorianToJD(5000, 6, 15.5);
-      expect(jd).toBeGreaterThan(JD_5000_JAN_1);
+      const jd = gregorianToJD(5000, 6, 15.5)
+      expect(jd).toBeGreaterThan(JD_5000_JAN_1)
 
-      const result = jdToGregorian(jd);
-      expect(result.year).toBe(5000);
-      expect(result.month).toBe(6);
-    });
-  });
+      const result = jdToGregorian(jd)
+      expect(result.year).toBe(5000)
+      expect(result.month).toBe(6)
+    })
+  })
 
   describe('格里高利历改革边界', () => {
     it('1582年10月15日 - 格里高利历第一天', () => {
-      const jd = gregorianToJD(1582, 10, 15.0);
-      expect(jd).toBeCloseTo(2299160.5, 5);
-    });
+      const jd = gregorianToJD(1582, 10, 15.0)
+      expect(jd).toBeCloseTo(2299160.5, 5)
+    })
 
     it('1582年10月4日 - 儒略历最后一天（跳过的日期）', () => {
       // 格里高利历中不存在1582年10月5-14日
       // 算法按格里高利历计算，10月4日会被当作10月15日前一天处理
       // 因此 1582年10月4.5日 的儒略日接近 10月15日(JD 2299160.5) - 10.5 = 2299150
       // 但实际算法将其视为格里高利历日期，结果为 JD 2299160.0
-      const jd = gregorianToJD(1582, 10, 4.5);
-      expect(jd).toBeDefined();
+      const jd = gregorianToJD(1582, 10, 4.5)
+      expect(jd).toBeDefined()
       // 验证具体的儒略日值：算法按格里高利历计算
-      expect(jd).toBeCloseTo(2299160.0, 5);
-    });
-  });
-});
+      expect(jd).toBeCloseTo(2299160.0, 5)
+    })
+  })
+})
 
 describe('星期计算验证', () => {
   /**
@@ -291,116 +291,116 @@ describe('星期计算验证', () => {
     { description: '1969年7月20日（周日，登月日）', year: 1969, month: 7, day: 20.5, expectedWeekday: 0 },
     { description: '1900年1月1日（周一）', year: 1900, month: 1, day: 1.5, expectedWeekday: 1 },
     { description: '1582年10月15日（周五）', year: 1582, month: 10, day: 15.5, expectedWeekday: 5 },
-  ];
+  ]
 
   weekdayTestCases.forEach(({ description, year, month, day, expectedWeekday }) => {
     it(description, () => {
-      const jd = gregorianToJD(year, month, day);
-      const weekday = getWeekDay(jd);
-      expect(weekday).toBe(expectedWeekday);
-    });
-  });
+      const jd = gregorianToJD(year, month, day)
+      const weekday = getWeekDay(jd)
+      expect(weekday).toBe(expectedWeekday)
+    })
+  })
 
   describe('连续日期星期递增验证', () => {
     it('连续7天的星期应该从0到6循环', () => {
-      const baseJD = gregorianToJD(2024, 1, 7.5); // 2024年1月7日是周日
-      const weekdays: number[] = [];
+      const baseJD = gregorianToJD(2024, 1, 7.5) // 2024年1月7日是周日
+      const weekdays: number[] = []
 
       for (let i = 0; i < 7; i++) {
-        weekdays.push(getWeekDay(baseJD + i));
+        weekdays.push(getWeekDay(baseJD + i))
       }
 
       // 从周日开始连续7天
-      expect(weekdays).toEqual([0, 1, 2, 3, 4, 5, 6]);
-    });
-  });
-});
+      expect(weekdays).toEqual([0, 1, 2, 3, 4, 5, 6])
+    })
+  })
+})
 
 describe('特殊日期精度测试', () => {
   describe('小数日期精度', () => {
     it('正午 (0.5日) 精确计算', () => {
-      const jd = gregorianToJD(2000, 1, 1.5);
-      const result = jdToGregorian(jd);
-      expect(result.hour).toBe(12);
-      expect(result.minute).toBe(0);
-      expect(result.second).toBeCloseTo(0, 3);
-    });
+      const jd = gregorianToJD(2000, 1, 1.5)
+      const result = jdToGregorian(jd)
+      expect(result.hour).toBe(12)
+      expect(result.minute).toBe(0)
+      expect(result.second).toBeCloseTo(0, 3)
+    })
 
     it('午夜 (0.0日) 精确计算', () => {
-      const jd = gregorianToJD(2000, 1, 1.0);
-      const result = jdToGregorian(jd);
-      expect(result.hour).toBe(0);
-      expect(result.minute).toBe(0);
-      expect(result.second).toBeCloseTo(0, 3);
-    });
+      const jd = gregorianToJD(2000, 1, 1.0)
+      const result = jdToGregorian(jd)
+      expect(result.hour).toBe(0)
+      expect(result.minute).toBe(0)
+      expect(result.second).toBeCloseTo(0, 3)
+    })
 
     it('6时 (0.25日) 精确计算', () => {
-      const jd = gregorianToJD(2000, 1, 1.25);
-      const result = jdToGregorian(jd);
-      expect(result.hour).toBe(6);
-      expect(result.minute).toBe(0);
-    });
+      const jd = gregorianToJD(2000, 1, 1.25)
+      const result = jdToGregorian(jd)
+      expect(result.hour).toBe(6)
+      expect(result.minute).toBe(0)
+    })
 
     it('18时 (0.75日) 精确计算', () => {
-      const jd = gregorianToJD(2000, 1, 1.75);
-      const result = jdToGregorian(jd);
-      expect(result.hour).toBe(18);
-      expect(result.minute).toBe(0);
-    });
-  });
+      const jd = gregorianToJD(2000, 1, 1.75)
+      const result = jdToGregorian(jd)
+      expect(result.hour).toBe(18)
+      expect(result.minute).toBe(0)
+    })
+  })
 
   describe('闰年二月验证', () => {
-    const leapYears = [2000, 2004, 2020, 2024, 1600, 2400];
-    const nonLeapYears = [1900, 2100, 2200, 2300, 1800];
+    const leapYears = [2000, 2004, 2020, 2024, 1600, 2400]
+    const nonLeapYears = [1900, 2100, 2200, 2300, 1800]
 
     leapYears.forEach((year) => {
       it(`${year}年是闰年，应有2月29日`, () => {
-        const jd = gregorianToJD(year, 2, 29.5);
-        const result = jdToGregorian(jd);
-        expect(result.year).toBe(year);
-        expect(result.month).toBe(2);
-        expect(result.day).toBe(29);
-      });
-    });
+        const jd = gregorianToJD(year, 2, 29.5)
+        const result = jdToGregorian(jd)
+        expect(result.year).toBe(year)
+        expect(result.month).toBe(2)
+        expect(result.day).toBe(29)
+      })
+    })
 
     nonLeapYears.forEach((year) => {
       it(`${year}年不是闰年，2月29日应转为3月1日`, () => {
         // 非闰年的2月29日实际上会被算作3月1日（或2月28日+1天）
-        const jdFeb28 = gregorianToJD(year, 2, 28.5);
-        const jdFeb29 = gregorianToJD(year, 2, 29.5);
+        const jdFeb28 = gregorianToJD(year, 2, 28.5)
+        const jdFeb29 = gregorianToJD(year, 2, 29.5)
 
         // 两个日期应该相差1天
-        expect(jdFeb29 - jdFeb28).toBeCloseTo(1, 8);
+        expect(jdFeb29 - jdFeb28).toBeCloseTo(1, 8)
 
         // 验证2月29日实际被解析为3月1日
-        const resultFeb29 = jdToGregorian(jdFeb29);
-        expect(resultFeb29.year).toBe(year);
-        expect(resultFeb29.month).toBe(3);
-        expect(resultFeb29.day).toBe(1);
-      });
-    });
-  });
-});
+        const resultFeb29 = jdToGregorian(jdFeb29)
+        expect(resultFeb29.year).toBe(year)
+        expect(resultFeb29.month).toBe(3)
+        expect(resultFeb29.day).toBe(1)
+      })
+    })
+  })
+})
 
 describe('高精度数值验证', () => {
-  it('J2000 纪元精确值 (2451545.0)', () => {
-    const jd = gregorianToJD(2000, 1, 1.5);
+  it('j2000 纪元精确值 (2451545.0)', () => {
+    const jd = gregorianToJD(2000, 1, 1.5)
     // 精确到小数点后10位
-    expect(Math.abs(jd - 2451545.0)).toBeLessThan(1e-10);
-  });
+    expect(Math.abs(jd - 2451545.0)).toBeLessThan(1e-10)
+  })
 
   it('儒略日起点精确值 (0.0)', () => {
-    const jd = gregorianToJD(-4712, 1, 1.5);
+    const jd = gregorianToJD(-4712, 1, 1.5)
     // 精度要求：小数点后10位（与J2000纪元保持一致的高精度标准）
-    expect(Math.abs(jd)).toBeLessThan(1e-10);
-  });
+    expect(Math.abs(jd)).toBeLessThan(1e-10)
+  })
 
   it('大数值儒略日计算稳定性', () => {
     // 测试非常大的年份
-    const jd1 = gregorianToJD(10000, 1, 1.5);
-    const jd2 = gregorianToJD(10000, 1, 2.5);
+    const jd1 = gregorianToJD(10000, 1, 1.5)
+    const jd2 = gregorianToJD(10000, 1, 2.5)
 
     // 相邻两天应该精确相差1
-    expect(jd2 - jd1).toBeCloseTo(1, 10);
-  });
-});
+    expect(jd2 - jd1).toBeCloseTo(1, 10)
+  })
+})

@@ -1,11 +1,29 @@
 {
   "name": "@yhjs/lunar",
+  "type": "module",
   "version": "1.0.0",
   "description": "精确的中国农历与天文计算库 - 寿星万年历 TypeScript 实现",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/user/shouxing-lunar#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/user/shouxing-lunar.git"
+  },
+  "keywords": [
+    "lunar",
+    "calendar",
+    "chinese",
+    "astronomy",
+    "solar-term",
+    "gan-zhi",
+    "eclipse",
+    "农历",
+    "万年历",
+    "节气",
+    "干支",
+    "日月食"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -43,45 +61,30 @@
       "require": "./dist/data/index.cjs"
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "benchmark": "vitest run tests/performance/benchmark.test.ts",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [
-    "lunar",
-    "calendar",
-    "chinese",
-    "astronomy",
-    "solar-term",
-    "gan-zhi",
-    "eclipse",
-    "农历",
-    "万年历",
-    "节气",
-    "干支",
-    "日月食"
-  ],
-  "author": "",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/user/shouxing-lunar.git"
-  },
-  "homepage": "https://github.com/user/shouxing-lunar#readme",
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "devDependencies": {
+    "@antfu/eslint-config": "^7.4.3",
     "@types/node": "^25.0.9",
     "@vitest/coverage-v8": "^4.0.17",
+    "eslint": "^10.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",

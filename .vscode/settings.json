@@ -1,0 +1,20 @@
+{
+  "eslint.format.enable": true,
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json",
+    "jsonc",
+    "yaml",
+    "toml",
+    "markdown"
+  ],
+  "prettier.enable": false
+}

@@ -12,125 +12,125 @@
  * - data: 数据模块（城市坐标、历史纪年等）
  */
 
-// 核心模块
-export * from './core';
-
-// 农历模块
-export * from './lunar';
-
-// 天文历表模块 - 类型导出
-export type { RiseTransitSetResult, TwilightTimes } from './ephemeris';
-
-// 天文历表模块 (选择性导出避免与 astronomy 冲突)
-export {
-  // 太阳计算
-  calculateEarthLongitude,
-  calculateEarthLatitude,
-  calculateEarthSunDistance,
-  calculateEarthHeliocentricCoord,
-  calculateSolarAberration,
-  calculateSunTrueLongitude,
-  calculateSunGeocentricCoord,
-  calculateSunApparentLongitude,
-  calculateSunVelocity,
-  calculateTimeFromSunLongitude,
-  calculateSolarTerms,
-  SOLAR_TERM_NAMES_CN,
-  SOLAR_TERM_NAMES_EN,
-  // 月球计算
-  calculateMoonLongitude,
-  calculateMoonLatitude,
-  calculateMoonDistance,
-  calculateMoonGeocentricCoord,
-  calculateMoonLongitudeAberration,
-  calculateMoonLatitudeAberration,
-  calculateMoonApparentLongitude,
-  calculateMoonVelocity,
-  calculateTimeFromMoonLongitude,
-  calculateMoonApparentCoord,
-  calculateMoonAngularRadius,
-  calculateMoonSunLongitudeDiff,
-  calculateTimeFromMoonSunDiff,
-  calculateTimeFromMoonSunDiffFast,
-  MOON_MEAN_DISTANCE,
-  MOON_MEAN_ANGULAR_RADIUS,
-  MOON_PHASE_NAMES_CN,
-  MOON_PHASE_NAMES_EN,
-  // 行星计算
-  calculatePlanetHeliocentricCoord,
-  calculatePlanetGeocentricCoord,
-  calculatePlanetPhaseAngle,
-  calculatePlanetMagnitude,
-  isPlanetDirect,
-  calculateLightTime,
-  Planet,
-  AU_TO_KM,
-  SPEED_OF_LIGHT,
-  // 升中天落计算
-  HorizonType,
-  HORIZON_CORRECTIONS,
-  calculateGST,
-  eclipticToEquatorial,
-  equatorialToHorizontal,
-  calculateHourAngle,
-  calculateRefraction,
-  calculateSunRiseTransitSet,
-  calculateMoonRiseTransitSet,
-  calculateDayLength,
-  jdToTimeString,
-  degreesToRadians,
-  radiansToDegrees,
-  // 晨昏光计算
-  TwilightType,
-  calculateTwilight,
-  calculateCivilTwilight,
-  calculateNauticalTwilight,
-  calculateAstronomicalTwilight,
-} from './ephemeris';
-
-// 日月食模块
-export * from './eclipse';
-
 // 简化天文API - 类型导出
 export type {
-  ObserverLocation,
   CelestialPosition,
-  SunTimes,
-  MoonTimes,
   MoonPhaseInfo,
-} from './astronomy';
+  MoonTimes,
+  ObserverLocation,
+  SunTimes,
+} from './astronomy'
 
 // 简化天文API (用户友好的高级接口)
 export {
-  getSunPosition,
-  getMoonPosition,
-  getPlanetPosition,
-  getSunTimes,
-  getMoonTimes,
   getMoonPhase,
+  getMoonPosition,
+  getMoonTimes,
+  getPlanetPosition,
   getSolarTerms,
-} from './astronomy';
+  getSunPosition,
+  getSunTimes,
+} from './astronomy'
+
+// 核心模块
+export * from './core'
 
 // 数据模块 - 类型导出
-export type { CityInfo, EraInfo, DynastyInfo } from './data';
+export type { CityInfo, DynastyInfo, EraInfo } from './data'
 
 // 数据模块
 export {
   // 城市数据
   decodeCoordinates,
-  encodeCoordinates,
-  PROVINCES,
-  getCitiesByProvince,
-  getProvincialCapital,
-  findCityByName,
-  getAllCities,
-  MAJOR_CITIES,
   // 历史纪年
   DYNASTIES,
-  getEraData,
-  findEraByYear,
+  encodeCoordinates,
+  findCityByName,
   findEraByName,
+  findEraByYear,
   findErasByDynasty,
-  yearToEraString,
+  getAllCities,
+  getCitiesByProvince,
   getDynastyByYear,
-} from './data';
+  getEraData,
+  getProvincialCapital,
+  MAJOR_CITIES,
+  PROVINCES,
+  yearToEraString,
+} from './data'
+
+// 日月食模块
+export * from './eclipse'
+
+// 天文历表模块 - 类型导出
+export type { RiseTransitSetResult, TwilightTimes } from './ephemeris'
+
+// 天文历表模块 (选择性导出避免与 astronomy 冲突)
+export {
+  AU_TO_KM,
+  calculateAstronomicalTwilight,
+  calculateCivilTwilight,
+  calculateDayLength,
+  calculateEarthHeliocentricCoord,
+  calculateEarthLatitude,
+  // 太阳计算
+  calculateEarthLongitude,
+  calculateEarthSunDistance,
+  calculateGST,
+  calculateHourAngle,
+  calculateLightTime,
+  calculateMoonAngularRadius,
+  calculateMoonApparentCoord,
+  calculateMoonApparentLongitude,
+  calculateMoonDistance,
+  calculateMoonGeocentricCoord,
+  calculateMoonLatitude,
+  calculateMoonLatitudeAberration,
+  // 月球计算
+  calculateMoonLongitude,
+  calculateMoonLongitudeAberration,
+  calculateMoonRiseTransitSet,
+  calculateMoonSunLongitudeDiff,
+  calculateMoonVelocity,
+  calculateNauticalTwilight,
+  calculatePlanetGeocentricCoord,
+  // 行星计算
+  calculatePlanetHeliocentricCoord,
+  calculatePlanetMagnitude,
+  calculatePlanetPhaseAngle,
+  calculateRefraction,
+  calculateSolarAberration,
+  calculateSolarTerms,
+  calculateSunApparentLongitude,
+  calculateSunGeocentricCoord,
+  calculateSunRiseTransitSet,
+  calculateSunTrueLongitude,
+  calculateSunVelocity,
+  calculateTimeFromMoonLongitude,
+  calculateTimeFromMoonSunDiff,
+  calculateTimeFromMoonSunDiffFast,
+  calculateTimeFromSunLongitude,
+  calculateTwilight,
+  degreesToRadians,
+  eclipticToEquatorial,
+  equatorialToHorizontal,
+  HORIZON_CORRECTIONS,
+  // 升中天落计算
+  HorizonType,
+  isPlanetDirect,
+  jdToTimeString,
+  MOON_MEAN_ANGULAR_RADIUS,
+  MOON_MEAN_DISTANCE,
+  MOON_PHASE_NAMES_CN,
+  MOON_PHASE_NAMES_EN,
+  Planet,
+  radiansToDegrees,
+  SOLAR_TERM_NAMES_CN,
+  SOLAR_TERM_NAMES_EN,
+  SPEED_OF_LIGHT,
+  // 晨昏光计算
+  TwilightType,
+} from './ephemeris'
+
+// 农历模块
+export * from './lunar'

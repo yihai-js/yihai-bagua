@@ -12,12 +12,13 @@
  * 使用精密月球星历表计算月球位置
  */
 
-import { RAD } from '../core/constants';
-import { normalizeAngle, normalizeAngleSigned, SphericalCoord } from '../core/coordinate';
-import { calculateLongitudeNutation } from '../core/nutation';
-import { calculateMoonSeries } from '../core/series';
-import { MOON_L, MOON_B, MOON_R } from '../data/vsop87/moon';
-import { calculateSunApparentLongitude, calculateSunVelocity } from './sun';
+import type { SphericalCoord } from '../core/coordinate'
+import { RAD } from '../core/constants'
+import { normalizeAngle, normalizeAngleSigned } from '../core/coordinate'
+import { calculateLongitudeNutation } from '../core/nutation'
+import { calculateMoonSeries } from '../core/series'
+import { MOON_B, MOON_L, MOON_R } from '../data/vsop87/moon'
+import { calculateSunApparentLongitude, calculateSunVelocity } from './sun'
 
 /**
  * 计算月球黄经 (几何黄经)
@@ -29,54 +30,54 @@ import { calculateSunApparentLongitude, calculateSunVelocity } from './sun';
  */
 export function calculateMoonLongitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
   // 月球平黄经基本项 (单位: 弧度)
   // @see eph0.js:1036-1037
-  const t2 = t * t;
-  const t3 = t2 * t;
-  const t4 = t3 * t;
-  const t5 = t4 * t;
+  const t2 = t * t
+  const t3 = t2 * t
+  const t4 = t3 * t
+  const t5 = t4 * t
 
   // 3.81034409 ≈ 218° (J2000时刻月球平黄经)
   // 8399.684730072 弧度/世纪 ≈ 13.2°/天 (月球平均运动)
-  let result =
-    3.81034409 +
-    8399.684730072 * t -
-    3.319e-5 * t2 +
-    3.11e-8 * t3 -
-    2.033e-10 * t4;
+  let result
+    = 3.81034409
+      + 8399.684730072 * t
+      - 3.319e-5 * t2
+      + 3.11e-8 * t3
+      - 2.033e-10 * t4
 
   // 岁差 (角秒转弧度)
   // @see eph0.js:1037
-  result +=
-    (5028.792262 * t +
-      1.1124406 * t2 +
-      0.00007699 * t3 -
-      0.000023479 * t4 -
-      0.0000000178 * t5) /
-    RAD;
+  result
+    += (5028.792262 * t
+      + 1.1124406 * t2
+      + 0.00007699 * t3
+      - 0.000023479 * t4
+      - 0.0000000178 * t5)
+    / RAD
 
   // 各级数贡献 (角秒转弧度)
-  let tPower = 1;
+  let tPower = 1
   for (let i = 0; i < MOON_L.length; i++) {
-    const data = MOON_L[i];
+    const data = MOON_L[i]
     if (data.length > 0) {
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0) {
         // 高次项使用较少的项数
-        const ratio = (data.length / 6) / (MOON_L[0].length / 6);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = (data.length / 6) / (MOON_L[0].length / 6)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateMoonSeries(data, t, n);
+      const seriesSum = calculateMoonSeries(data, t, n)
       // 角秒转弧度
-      result += (seriesSum / RAD) * tPower;
+      result += (seriesSum / RAD) * tPower
     }
-    tPower *= t;
+    tPower *= t
   }
 
-  return normalizeAngle(result);
+  return normalizeAngle(result)
 }
 
 /**
@@ -89,28 +90,28 @@ export function calculateMoonLongitude(
  */
 export function calculateMoonLatitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  let result = 0;
-  let tPower = 1;
+  let result = 0
+  let tPower = 1
 
   for (let i = 0; i < MOON_B.length; i++) {
-    const data = MOON_B[i];
+    const data = MOON_B[i]
     if (data.length > 0) {
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0) {
-        const ratio = (data.length / 6) / (MOON_B[0].length / 6);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = (data.length / 6) / (MOON_B[0].length / 6)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateMoonSeries(data, t, n);
+      const seriesSum = calculateMoonSeries(data, t, n)
       // 角秒转弧度
-      result += (seriesSum / RAD) * tPower;
+      result += (seriesSum / RAD) * tPower
     }
-    tPower *= t;
+    tPower *= t
   }
 
-  return result;
+  return result
 }
 
 /**
@@ -123,27 +124,27 @@ export function calculateMoonLatitude(
  */
 export function calculateMoonDistance(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
-  let result = 0;
-  let tPower = 1;
+  let result = 0
+  let tPower = 1
 
   for (let i = 0; i < MOON_R.length; i++) {
-    const data = MOON_R[i];
+    const data = MOON_R[i]
     if (data.length > 0) {
-      let n = termCount;
+      let n = termCount
       if (termCount > 0 && i > 0) {
-        const ratio = (data.length / 6) / (MOON_R[0].length / 6);
-        n = Math.max(3, Math.round(termCount * ratio));
+        const ratio = (data.length / 6) / (MOON_R[0].length / 6)
+        n = Math.max(3, Math.round(termCount * ratio))
       }
 
-      const seriesSum = calculateMoonSeries(data, t, n);
-      result += seriesSum * tPower;
+      const seriesSum = calculateMoonSeries(data, t, n)
+      result += seriesSum * tPower
     }
-    tPower *= t;
+    tPower *= t
   }
 
-  return result;
+  return result
 }
 
 /**
@@ -160,13 +161,13 @@ export function calculateMoonGeocentricCoord(
   t: number,
   n1: number = -1,
   n2: number = -1,
-  n3: number = -1
+  n3: number = -1,
 ): SphericalCoord {
   return [
     calculateMoonLongitude(t, n1),
     calculateMoonLatitude(t, n2),
     calculateMoonDistance(t, n3),
-  ];
+  ]
 }
 
 /**
@@ -180,18 +181,18 @@ export function calculateMoonGeocentricCoord(
  */
 export function calculateMoonLongitudeAberration(t: number): number {
   // 月球平黄经速度 (弧度/世纪)
-  const moonVelocity =
-    8399.70911 +
-    3.45 * Math.sin(2.87 + 8328.69 * t) +
-    0.05 * Math.sin(5.19 + 7214.06 * t) +
-    0.04 * Math.sin(3.51 + 16657.38 * t);
+  const moonVelocity
+    = 8399.70911
+      + 3.45 * Math.sin(2.87 + 8328.69 * t)
+      + 0.05 * Math.sin(5.19 + 7214.06 * t)
+      + 0.04 * Math.sin(3.51 + 16657.38 * t)
 
   // 光行差 = -速度 * 光行差常数
   // @see eph0.js:1076 光行差常数约 -3.4e-6 (角秒/弧度每世纪)
   // 结果以角秒为单位，需转为弧度
-  const aberrationArcsec = -3.4e-6 * moonVelocity;
+  const aberrationArcsec = -3.4e-6 * moonVelocity
 
-  return aberrationArcsec / RAD;
+  return aberrationArcsec / RAD
 }
 
 /**
@@ -205,19 +206,19 @@ export function calculateMoonLongitudeAberration(t: number): number {
 export function calculateMoonLatitudeAberration(t: number, lon: number): number {
   // 月球平近点角相关参数
   // @see eph0.js:1078-1084
-  const a = 8399.685 * t + 5.3813;
-  const b = 7214.063 * t + 4.8997;
+  const a = 8399.685 * t + 5.3813
+  const b = 7214.063 * t + 4.8997
 
-  const latVelocity =
-    518.5 * Math.sin(a) +
-    -15.5 * Math.sin(2 * lon - a) +
-    9.3 * Math.sin(a - b) +
-    -2.6 * Math.sin(a + b);
+  const latVelocity
+    = 518.5 * Math.sin(a)
+      + -15.5 * Math.sin(2 * lon - a)
+      + 9.3 * Math.sin(a - b)
+      + -2.6 * Math.sin(a + b)
 
   // 光行差 (角秒转弧度)
-  const aberrationArcsec = -3.4e-6 * latVelocity;
+  const aberrationArcsec = -3.4e-6 * latVelocity
 
-  return aberrationArcsec / RAD;
+  return aberrationArcsec / RAD
 }
 
 /**
@@ -232,18 +233,18 @@ export function calculateMoonLatitudeAberration(t: number, lon: number): number 
  */
 export function calculateMoonApparentLongitude(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): number {
   // 几何黄经
-  const geoLon = calculateMoonLongitude(t, termCount);
+  const geoLon = calculateMoonLongitude(t, termCount)
 
   // 黄经章动
-  const nutationLon = calculateLongitudeNutation(t);
+  const nutationLon = calculateLongitudeNutation(t)
 
   // 光行差
-  const aberration = calculateMoonLongitudeAberration(t);
+  const aberration = calculateMoonLongitudeAberration(t)
 
-  return normalizeAngle(geoLon + nutationLon + aberration);
+  return normalizeAngle(geoLon + nutationLon + aberration)
 }
 
 /**
@@ -254,15 +255,15 @@ export function calculateMoonApparentLongitude(
  * @returns 黄经变化率 (弧度/世纪)
  */
 export function calculateMoonVelocity(t: number): number {
-  const f = 8328.691424623 * t;
+  const f = 8328.691424623 * t
   // 返回弧度/世纪
   // 月球平均角速度约 8399.7 弧度/世纪 (约13°/天)
   return (
-    8399.71 +
-    3.45 * Math.sin(2.87 + f) +
-    0.05 * Math.sin(5.19 + 7214.06 * t) +
-    0.04 * Math.sin(3.51 + 16657.38 * t)
-  );
+    8399.71
+    + 3.45 * Math.sin(2.87 + f)
+    + 0.05 * Math.sin(5.19 + 7214.06 * t)
+    + 0.04 * Math.sin(3.51 + 16657.38 * t)
+  )
 }
 
 /**
@@ -281,25 +282,25 @@ export function calculateMoonVelocity(t: number): number {
  * ```
  */
 export function calculateTimeFromMoonLongitude(targetLongitude: number): number {
-  const v0 = 8399.70911; // 月球平均角速度
+  const v0 = 8399.70911 // 月球平均角速度
 
   // 初始估计
-  let t = (targetLongitude - 3.8104) / v0;
+  let t = (targetLongitude - 3.8104) / v0
 
   // 迭代精化 - 使用 normalizeAngleSigned 处理角度环绕
-  let v = calculateMoonVelocity(t);
-  let diff = normalizeAngleSigned(targetLongitude - calculateMoonApparentLongitude(t, 10));
-  t += diff / v;
+  let v = calculateMoonVelocity(t)
+  let diff = normalizeAngleSigned(targetLongitude - calculateMoonApparentLongitude(t, 10))
+  t += diff / v
 
-  v = calculateMoonVelocity(t);
-  diff = normalizeAngleSigned(targetLongitude - calculateMoonApparentLongitude(t, 60));
-  t += diff / v;
+  v = calculateMoonVelocity(t)
+  diff = normalizeAngleSigned(targetLongitude - calculateMoonApparentLongitude(t, 60))
+  t += diff / v
 
-  v = calculateMoonVelocity(t);
-  diff = normalizeAngleSigned(targetLongitude - calculateMoonApparentLongitude(t, -1));
-  t += diff / v;
+  v = calculateMoonVelocity(t)
+  diff = normalizeAngleSigned(targetLongitude - calculateMoonApparentLongitude(t, -1))
+  t += diff / v
 
-  return t;
+  return t
 }
 
 /**
@@ -313,29 +314,29 @@ export function calculateTimeFromMoonLongitude(targetLongitude: number): number 
  */
 export function calculateMoonApparentCoord(
   t: number,
-  termCount: number = -1
+  termCount: number = -1,
 ): SphericalCoord {
-  const geoCoord = calculateMoonGeocentricCoord(t, termCount, termCount, termCount);
+  const geoCoord = calculateMoonGeocentricCoord(t, termCount, termCount, termCount)
 
   // 视黄经
-  const apparentLon = calculateMoonApparentLongitude(t, termCount);
+  const apparentLon = calculateMoonApparentLongitude(t, termCount)
 
   // 视黄纬 (加入光行差修正)
-  const latAberration = calculateMoonLatitudeAberration(t, geoCoord[0]);
-  const apparentLat = geoCoord[1] + latAberration;
+  const latAberration = calculateMoonLatitudeAberration(t, geoCoord[0])
+  const apparentLat = geoCoord[1] + latAberration
 
-  return [apparentLon, apparentLat, geoCoord[2]];
+  return [apparentLon, apparentLat, geoCoord[2]]
 }
 
 /**
  * 月球平均距离 (km)
  */
-export const MOON_MEAN_DISTANCE = 384400;
+export const MOON_MEAN_DISTANCE = 384400
 
 /**
  * 月球平均视半径 (角秒)
  */
-export const MOON_MEAN_ANGULAR_RADIUS = 931.2;
+export const MOON_MEAN_ANGULAR_RADIUS = 931.2
 
 /**
  * 计算月球视半径
@@ -347,19 +348,19 @@ export const MOON_MEAN_ANGULAR_RADIUS = 931.2;
  */
 export function calculateMoonAngularRadius(distance: number): number {
   // 视半径与距离成反比
-  const radiusArcsec = (MOON_MEAN_ANGULAR_RADIUS * MOON_MEAN_DISTANCE) / distance;
-  return radiusArcsec / RAD;
+  const radiusArcsec = (MOON_MEAN_ANGULAR_RADIUS * MOON_MEAN_DISTANCE) / distance
+  return radiusArcsec / RAD
 }
 
 /**
  * 月相名称 (中文)
  */
-export const MOON_PHASE_NAMES_CN = ['朔', '上弦', '望', '下弦'] as const;
+export const MOON_PHASE_NAMES_CN = ['朔', '上弦', '望', '下弦'] as const
 
 /**
  * 月相名称 (英文)
  */
-export const MOON_PHASE_NAMES_EN = ['New Moon', 'First Quarter', 'Full Moon', 'Last Quarter'] as const;
+export const MOON_PHASE_NAMES_EN = ['New Moon', 'First Quarter', 'Full Moon', 'Last Quarter'] as const
 
 /**
  * 计算日月视黄经差
@@ -376,12 +377,12 @@ export const MOON_PHASE_NAMES_EN = ['New Moon', 'First Quarter', 'Full Moon', 'L
 export function calculateMoonSunLongitudeDiff(
   t: number,
   moonTermCount: number = -1,
-  sunTermCount: number = -1
+  sunTermCount: number = -1,
 ): number {
-  const moonLon = calculateMoonApparentLongitude(t, moonTermCount);
-  const sunLon = calculateSunApparentLongitude(t, sunTermCount);
+  const moonLon = calculateMoonApparentLongitude(t, moonTermCount)
+  const sunLon = calculateSunApparentLongitude(t, sunTermCount)
 
-  return normalizeAngle(moonLon - sunLon);
+  return normalizeAngle(moonLon - sunLon)
 }
 
 /**
@@ -403,25 +404,25 @@ export function calculateMoonSunLongitudeDiff(
  * ```
  */
 export function calculateTimeFromMoonSunDiff(targetDiff: number): number {
-  const v0 = 7771.37714500204; // 月日黄经差平均变化率
+  const v0 = 7771.37714500204 // 月日黄经差平均变化率
 
   // 初始估计
-  let t = (targetDiff + 1.08472) / v0;
+  let t = (targetDiff + 1.08472) / v0
 
   // 迭代精化
-  let v = calculateMoonVelocity(t) - calculateSunVelocity(t);
-  let diff = normalizeAngleSigned(targetDiff - calculateMoonSunLongitudeDiff(t, 3, 3));
-  t += diff / v;
+  let v = calculateMoonVelocity(t) - calculateSunVelocity(t)
+  let diff = normalizeAngleSigned(targetDiff - calculateMoonSunLongitudeDiff(t, 3, 3))
+  t += diff / v
 
-  v = calculateMoonVelocity(t) - calculateSunVelocity(t);
-  diff = normalizeAngleSigned(targetDiff - calculateMoonSunLongitudeDiff(t, 20, 10));
-  t += diff / v;
+  v = calculateMoonVelocity(t) - calculateSunVelocity(t)
+  diff = normalizeAngleSigned(targetDiff - calculateMoonSunLongitudeDiff(t, 20, 10))
+  t += diff / v
 
-  v = calculateMoonVelocity(t) - calculateSunVelocity(t);
-  diff = normalizeAngleSigned(targetDiff - calculateMoonSunLongitudeDiff(t, -1, 60));
-  t += diff / v;
+  v = calculateMoonVelocity(t) - calculateSunVelocity(t)
+  diff = normalizeAngleSigned(targetDiff - calculateMoonSunLongitudeDiff(t, -1, 60))
+  t += diff / v
 
-  return t;
+  return t
 }
 
 /**
@@ -434,18 +435,18 @@ export function calculateTimeFromMoonSunDiff(targetDiff: number): number {
  * @returns 儒略世纪数 (J2000起算)
  */
 export function calculateTimeFromMoonSunDiffFast(targetDiff: number): number {
-  const v0 = 7771.37714500204;
+  const v0 = 7771.37714500204
 
-  let t = (targetDiff + 1.08472) / v0;
-  const t2 = t * t;
+  let t = (targetDiff + 1.08472) / v0
+  const t2 = t * t
 
   // 快速修正
-  t -=
-    (-0.00003309 * t2 +
-      0.10976 * Math.cos(0.784758 + 8328.6914246 * t + 0.000152292 * t2) +
-      0.02224 * Math.cos(0.1874 + 7214.0628654 * t - 0.00021848 * t2) -
-      0.03342 * Math.cos(4.669257 + 628.307585 * t)) /
-    v0;
+  t
+    -= (-0.00003309 * t2
+      + 0.10976 * Math.cos(0.784758 + 8328.6914246 * t + 0.000152292 * t2)
+      + 0.02224 * Math.cos(0.1874 + 7214.0628654 * t - 0.00021848 * t2)
+      - 0.03342 * Math.cos(4.669257 + 628.307585 * t))
+    / v0
 
-  return t;
+  return t
 }
