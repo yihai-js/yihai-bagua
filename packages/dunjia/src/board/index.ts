@@ -1,4 +1,5 @@
 export {
+  applyMoveStar,
   buildBoard,
   createEmptyPalaceData,
   initDoors,
@@ -11,3 +12,5 @@ export {
 } from './common'
 
 export type { GroundGanResult } from './common'
+
+export { TimeDunjia } from './time-dunjia'
