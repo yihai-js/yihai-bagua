@@ -22,19 +22,20 @@ function ensureAfterNumPointers(): { prev: number, next: number }[] {
   if (afterNumPointers)
     return afterNumPointers
   const len = PALACE_BAGUA_NAMES.length
+  const nums = PALACE_AFTER_NUMS as readonly number[]
   afterNumPointers = PALACE_AFTER_NUMS.map((num) => {
     const prevNum = ((num - 1 + len - 1) % len) + 1
     const nextNum = (num % len) + 1
     return {
-      prev: PALACE_AFTER_NUMS.indexOf(prevNum),
-      next: PALACE_AFTER_NUMS.indexOf(nextNum),
+      prev: nums.indexOf(prevNum),
+      next: nums.indexOf(nextNum),
     }
   })
   return afterNumPointers
 }
 
 export function getIndexByAfterNum(num: number): number {
-  const index = PALACE_AFTER_NUMS.indexOf(num)
+  const index = (PALACE_AFTER_NUMS as readonly number[]).indexOf(num)
   return index >= 0 ? index : 0
 }
 
