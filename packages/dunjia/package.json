@@ -1,0 +1,42 @@
+{
+  "name": "@yhjs/dunjia",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "奇门遁甲排盘计算库 - 时家奇门与山向奇门",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./outer-gods": {
+      "types": "./dist/outer-gods/index.d.ts",
+      "import": "./dist/outer-gods/index.js",
+      "require": "./dist/outer-gods/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "engines": { "node": ">=16.0.0" },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@yhjs/lunar": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.17",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.17"
+  }
+}
