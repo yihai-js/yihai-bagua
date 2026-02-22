@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { TIAN_GAN } from '@yhjs/lunar'
+import { describe, expect, it } from 'vitest'
 
 describe('cross-package import', () => {
   it('should import TIAN_GAN from @yhjs/lunar', () => {
