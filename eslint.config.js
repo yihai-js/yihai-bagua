@@ -5,5 +5,7 @@ export default antfu({
   typescript: true,
   ignores: [
     'src-legacy/**',
+    '**/dist/**',
+    'docs/**',
   ],
 })

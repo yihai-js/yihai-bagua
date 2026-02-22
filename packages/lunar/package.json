@@ -1,0 +1,90 @@
+{
+  "name": "@yhjs/lunar",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "精确的中国农历与天文计算库 - 寿星万年历 TypeScript 实现",
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/user/shouxing-lunar#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/user/shouxing-lunar.git"
+  },
+  "keywords": [
+    "lunar",
+    "calendar",
+    "chinese",
+    "astronomy",
+    "solar-term",
+    "gan-zhi",
+    "eclipse",
+    "农历",
+    "万年历",
+    "节气",
+    "干支",
+    "日月食"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.cjs"
+    },
+    "./lunar": {
+      "types": "./dist/lunar/index.d.ts",
+      "import": "./dist/lunar/index.js",
+      "require": "./dist/lunar/index.cjs"
+    },
+    "./ephemeris": {
+      "types": "./dist/ephemeris/index.d.ts",
+      "import": "./dist/ephemeris/index.js",
+      "require": "./dist/ephemeris/index.cjs"
+    },
+    "./eclipse": {
+      "types": "./dist/eclipse/index.d.ts",
+      "import": "./dist/eclipse/index.js",
+      "require": "./dist/eclipse/index.cjs"
+    },
+    "./astronomy": {
+      "types": "./dist/astronomy/index.d.ts",
+      "import": "./dist/astronomy/index.js",
+      "require": "./dist/astronomy/index.cjs"
+    },
+    "./data": {
+      "types": "./dist/data/index.d.ts",
+      "import": "./dist/data/index.js",
+      "require": "./dist/data/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "benchmark": "vitest run tests/performance/benchmark.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "@vitest/coverage-v8": "^4.0.17",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.17"
+  }
+}
