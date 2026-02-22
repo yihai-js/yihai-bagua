@@ -24,6 +24,9 @@ importers:
         specifier: workspace:*
         version: link:../lunar
     devDependencies:
+      '@types/node':
+        specifier: ^25.0.9
+        version: 25.3.0
       '@vitest/coverage-v8':
         specifier: ^4.0.17
         version: 4.0.18(vitest@4.0.18(@types/node@25.3.0)(yaml@2.8.2))
