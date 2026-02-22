@@ -15,6 +15,11 @@ export enum Wuxing {
 export type YinYang = '阴' | '阳'
 
 /**
+ * 局类型
+ */
+export type BoardType = 'hour' | 'day' | 'month' | 'year' | 'minute'
+
+/**
  * 九宫格单宫数据
  */
 export interface Palace {
@@ -91,7 +96,7 @@ export interface GodInfo {
  */
 export interface BoardMeta {
   /** 局类型 */
-  type: 'hour' | 'day' | 'month' | 'year' | 'minute'
+  type: BoardType
   /** 起局时间 */
   datetime: Date
   /** 阴阳遁 */
@@ -117,7 +122,7 @@ export interface TimeBoardOptions {
   /** 起局时间 */
   datetime: Date
   /** 局类型，默认 'hour' */
-  type?: 'hour' | 'day' | 'month' | 'year' | 'minute'
+  type?: BoardType
 }
 
 /**
