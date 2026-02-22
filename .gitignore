@@ -9,6 +9,6 @@ node_modules
 dist
 coverage
 
-src/.DS_Store
+.DS_Store
 
 *.local.*
