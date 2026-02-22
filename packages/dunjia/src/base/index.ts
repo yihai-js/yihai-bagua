@@ -3,3 +3,6 @@ export type { BaguaInfo } from './bagua'
 
 export { getWuxingRelation, Wuxing, WUXING_NAMES } from './wuxing'
 export type { WuxingRelation } from './wuxing'
+
+export { getXun, getXunFromGanZhiIndex, LIUYI_LIST, XUN_LIST } from './xun'
+export type { XunInfo } from './xun'
