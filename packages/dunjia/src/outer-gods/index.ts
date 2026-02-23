@@ -1,3 +1,2 @@
 // 外圈神煞插件统一导出
-// 后续逐步添加各插件
-export {}
+export { jianShen } from './jian-shen'
