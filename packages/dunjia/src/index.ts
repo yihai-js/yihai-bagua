@@ -10,6 +10,11 @@ export type {
   PosDunjiaType,
 } from './board'
 
+// 模型数据导出
+export { DOORS } from './model/door'
+export { GODS } from './model/god'
+export { STARS } from './model/star'
+
 // 山向模块导出
 export {
   getMountainDetailFromAngle,
@@ -30,6 +35,9 @@ export type {
   NumData,
   PanType,
 } from './mountain'
+
+// 外圈神煞插件导出
+export { jianShen } from './outer-gods'
 
 // 类型导出
 export type {
