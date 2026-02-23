@@ -5,10 +5,11 @@
   "description": "精确的中国农历与天文计算库 - 寿星万年历 TypeScript 实现",
   "author": "",
   "license": "MIT",
-  "homepage": "https://github.com/user/shouxing-lunar#readme",
+  "homepage": "https://github.com/gkn1234/shouxing-lunar#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/user/shouxing-lunar.git"
+    "url": "https://github.com/gkn1234/shouxing-lunar.git",
+    "directory": "packages/lunar"
   },
   "keywords": [
     "lunar",
