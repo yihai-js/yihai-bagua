@@ -1,7 +1,7 @@
 {
   "name": "@yhjs/dunjia",
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "奇门遁甲排盘计算库 - 时家奇门与山向奇门",
   "author": "",
   "license": "MIT",
