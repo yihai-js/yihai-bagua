@@ -29,7 +29,7 @@ export class TimeDunjia {
   /** 从序列化数据恢复 */
   static from(data: DunjiaBoardData): TimeDunjia {
     return new TimeDunjia(
-      { ...data.meta, datetime: new Date(data.meta.datetime as unknown as string) },
+      { ...data.meta, datetime: new Date(data.meta.datetime) },
       data.palaces.map(p => ({ ...p })),
     )
   }

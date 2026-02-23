@@ -161,6 +161,6 @@ export interface OuterGodEntry {
  * 序列化后的盘面数据
  */
 export interface DunjiaBoardData {
-  meta: BoardMeta
+  meta: Omit<BoardMeta, 'datetime'> & { datetime: Date | string }
   palaces: Palace[]
 }

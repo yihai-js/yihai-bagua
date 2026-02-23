@@ -22,6 +22,8 @@ describe('board/move-star', () => {
         expect(result[i].star?.name).toBe(palaces[i].star?.name)
         expect(result[i].door?.name).toBe(palaces[i].door?.name)
         expect(result[i].god?.name).toBe(palaces[i].god?.name)
+        expect(result[i].outGan).toBe(palaces[i].outGan)
+        expect(result[i].outExtraGan).toBe(palaces[i].outExtraGan)
       }
     })
 
@@ -103,6 +105,22 @@ describe('board/move-star', () => {
       expect(resultStars).toEqual(originalStars)
     })
 
+    it('移动后外 8 宫隐干集合应不变', () => {
+      const { palaces } = getBoard()
+      const result = applyMoveStar(palaces, 3, 0)
+
+      const originalOutGan = new Set<string | null>()
+      const resultOutGan = new Set<string | null>()
+      for (let i = 0; i < 9; i++) {
+        if (i === CENTER_PALACE)
+          continue
+        originalOutGan.add(palaces[i].outGan)
+        resultOutGan.add(result[i].outGan)
+      }
+
+      expect(resultOutGan).toEqual(originalOutGan)
+    })
+
     it('prevOffset 不为 0 时的增量移动', () => {
       const { palaces } = getBoard()
 
@@ -120,6 +138,7 @@ describe('board/move-star', () => {
         expect(step2[i].star?.name).toBe(direct[i].star?.name)
         expect(step2[i].door?.name).toBe(direct[i].door?.name)
         expect(step2[i].god?.name).toBe(direct[i].god?.name)
+        expect(step2[i].outGan).toBe(direct[i].outGan)
       }
     })
 
@@ -128,28 +147,20 @@ describe('board/move-star', () => {
 
       // 先移 6 步
       const step1 = applyMoveStar(palaces, 6, 0)
-      // 再移到 2（环绕：(2+8)-6=4 步）
+      // 再移到 2（环绕：(2+8)-6=4 步，即总偏移 6+4=10 步）
       const step2 = applyMoveStar(step1, 2, 6)
 
-      // 等价于直接从 0 移到 (6+4)%8=2，但由于非线性需要验证一致性
-      // 这里验证移后的元素集合仍然完整
-      const resultGan = new Set<string>()
-      for (let i = 0; i < 9; i++) {
-        if (i === CENTER_PALACE)
-          continue
-        if (step2[i].groundGan)
-          resultGan.add(step2[i].groundGan)
-      }
+      // 总偏移 10 步 = 10%8 = 2 步，等价于直接移 2 步
+      const direct = applyMoveStar(palaces, 2, 0)
 
-      const originalGan = new Set<string>()
       for (let i = 0; i < 9; i++) {
-        if (i === CENTER_PALACE)
-          continue
-        if (palaces[i].groundGan)
-          originalGan.add(palaces[i].groundGan)
+        expect(step2[i].groundGan).toBe(direct[i].groundGan)
+        expect(step2[i].skyGan).toBe(direct[i].skyGan)
+        expect(step2[i].star?.name).toBe(direct[i].star?.name)
+        expect(step2[i].door?.name).toBe(direct[i].door?.name)
+        expect(step2[i].god?.name).toBe(direct[i].god?.name)
+        expect(step2[i].outGan).toBe(direct[i].outGan)
       }
-
-      expect(resultGan).toEqual(originalGan)
     })
 
     it('完整轮转（8步）应回到原始状态', () => {
@@ -168,6 +179,7 @@ describe('board/move-star', () => {
         expect(current[i].star?.name).toBe(palaces[i].star?.name)
         expect(current[i].door?.name).toBe(palaces[i].door?.name)
         expect(current[i].god?.name).toBe(palaces[i].god?.name)
+        expect(current[i].outGan).toBe(palaces[i].outGan)
       }
     })
   })

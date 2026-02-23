@@ -650,7 +650,8 @@ export function buildBoard(options: TimeBoardOptions): { palaces: Palace[], meta
  * 算法流程：
  * 1. 计算有效偏移量 = newOffset - prevOffset（取模 8）
  * 2. 从 0 号宫顺时针走有效偏移步，确定目标起点
- * 3. 遍历 8 个外宫，将源宫数据复制到目标宫
+ * 3. 遍历 8 个外宫，将源宫数据暂存至缓存（避免就地覆盖）
+ * 4. 将缓存数据写回对应目标宫
  *
  * @param palaces     当前宫位数组（不可变）
  * @param newOffset   新的移星偏移量
@@ -676,16 +677,14 @@ export function applyMoveStar(
   }
 
   // 从 0 号宫顺时针走 effectiveOffset 步，确定目标起点索引
-  let targetStart = 0
-  traverseByClock(0, len, (palaceIndex, step) => {
-    if (step === effectiveOffset) {
-      targetStart = palaceIndex
-      return false
-    }
-    return undefined
-  })
+  const fullOrder = buildClockOrder(0, len)
+  const targetStart = fullOrder[effectiveOffset % len]
 
-  // 遍历 8 个外宫，将源宫数据缓存后写入目标宫
+  // 构建顺时针索引序列，用于源→目标映射
+  const clockOrder = buildClockOrder(0, len)
+  const targetOrder = buildClockOrder(targetStart, len)
+
+  // 遍历 8 个外宫，将源宫数据暂存至缓存（避免就地覆盖）
   const tempCache: Record<number, {
     groundGan: string
     groundExtraGan: string | null
@@ -694,11 +693,14 @@ export function applyMoveStar(
     god: Palace['god']
     star: Palace['star']
     door: Palace['door']
+    outGan: string | null
+    outExtraGan: string | null
   }> = {}
 
-  let curTarget = targetStart
-  traverseByClock(0, len, (srcIndex) => {
-    tempCache[curTarget] = {
+  for (let i = 0; i < len; i++) {
+    const srcIndex = clockOrder[i]
+    const targetIndex = targetOrder[i]
+    tempCache[targetIndex] = {
       groundGan: result[srcIndex].groundGan,
       groundExtraGan: result[srcIndex].groundExtraGan,
       skyGan: result[srcIndex].skyGan,
@@ -706,20 +708,12 @@ export function applyMoveStar(
       god: result[srcIndex].god,
       star: result[srcIndex].star,
       door: result[srcIndex].door,
+      outGan: result[srcIndex].outGan,
+      outExtraGan: result[srcIndex].outExtraGan,
     }
-    // 获取 curTarget 的下一个顺时针位置
-    let nextTarget = 0
-    traverseByClock(curTarget, 2, (_palaceIndex, step) => {
-      if (step === 1) {
-        nextTarget = _palaceIndex
-        return false
-      }
-      return undefined
-    })
-    curTarget = nextTarget
-  })
+  }
 
-  // 将缓存数据写回
+  // 将缓存数据写回对应目标宫
   for (const [idxStr, data] of Object.entries(tempCache)) {
     const idx = Number(idxStr)
     result[idx].groundGan = data.groundGan
@@ -729,6 +723,8 @@ export function applyMoveStar(
     result[idx].god = data.god
     result[idx].star = data.star
     result[idx].door = data.door
+    result[idx].outGan = data.outGan
+    result[idx].outExtraGan = data.outExtraGan
   }
 
   return result
