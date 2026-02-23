@@ -641,6 +641,78 @@ export function buildBoard(options: TimeBoardOptions): { palaces: Palace[], meta
 }
 
 /* ------------------------------------------------------------------ */
+/*  buildBoardFromMeta - 从预设元数据排盘                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 从预设元数据构建完整盘面
+ *
+ * 与 buildBoard() 不同，此函数接受一个已完成解析的 BoardMeta，
+ * 跳过 resolveMeta 步骤，直接运行排盘管道。
+ * 适用于山向奇门等需要自行确定阴阳遁和局数的场景。
+ */
+export function buildBoardFromMeta(meta: BoardMeta): { palaces: Palace[], meta: BoardMeta } {
+  const emptyPalaces = createEmptyPalaceData()
+
+  // 1. 排地盘
+  const groundResult = initGroundGan(emptyPalaces, meta)
+
+  // 2. 排天盘
+  const skyPalaces = initSkyGan(
+    groundResult.palaces,
+    groundResult.headStarIndex,
+    groundResult.xunHeadGroundIndex,
+  )
+
+  // 3. 排八神
+  const godPalaces = initGods(
+    skyPalaces,
+    meta,
+    groundResult.headStarIndex,
+  )
+
+  // 4. 排九星
+  const starPalaces = initStars(
+    godPalaces,
+    groundResult.headStarIndex,
+    groundResult.headStarDoorStarIndex,
+    groundResult.isSpecialStar,
+  )
+
+  // 5. 排八门
+  const doorResult = initDoors(
+    starPalaces,
+    meta,
+    groundResult.headStarDoorDoorIndex,
+    groundResult.isSpecialStar,
+  )
+
+  // 6. 排隐干
+  const finalPalaces = initOutGan(
+    doorResult.palaces,
+    meta,
+    groundResult.headStarIndex,
+    doorResult.headDoorIndex,
+  )
+
+  // 7. 清理中宫
+  finalPalaces[CENTER_PALACE] = {
+    ...finalPalaces[CENTER_PALACE],
+    groundGan: '',
+    groundExtraGan: null,
+    skyGan: '',
+    skyExtraGan: null,
+    star: null,
+    door: null,
+    god: null,
+    outGan: null,
+    outExtraGan: null,
+  }
+
+  return { palaces: finalPalaces, meta }
+}
+
+/* ------------------------------------------------------------------ */
 /*  applyMoveStar - 移星换斗                                           */
 /* ------------------------------------------------------------------ */
 

@@ -1,6 +1,7 @@
 export {
   applyMoveStar,
   buildBoard,
+  buildBoardFromMeta,
   createEmptyPalaceData,
   initDoors,
   initGods,
@@ -12,5 +13,9 @@ export {
 } from './common'
 
 export type { GroundGanResult } from './common'
+
+export { PosDunjia } from './pos-dunjia'
+
+export type { PosBoardOptions, PosDunjiaTrans, PosDunjiaType } from './pos-dunjia'
 
 export { TimeDunjia } from './time-dunjia'
