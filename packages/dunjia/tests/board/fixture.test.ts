@@ -5,7 +5,7 @@ import { buildBoard } from '../../src/board/common'
 import { FIXTURE_CASES } from '../fixtures/fixture-data'
 
 describe('board/fixture', () => {
-  describe('buildBoard 一致性验证', () => {
+  describe('buildBoard 结构验证', () => {
     for (const fixture of FIXTURE_CASES) {
       describe(fixture.description, () => {
         const { palaces, meta } = buildBoard({
@@ -26,9 +26,8 @@ describe('board/fixture', () => {
         })
 
         it('局数应在 1-9 范围内', () => {
-          const [min, max] = fixture.expectedMeta.juNumberRange
-          expect(meta.juNumber).toBeGreaterThanOrEqual(min)
-          expect(meta.juNumber).toBeLessThanOrEqual(max)
+          expect(meta.juNumber).toBeGreaterThanOrEqual(1)
+          expect(meta.juNumber).toBeLessThanOrEqual(9)
         })
 
         it('moveStarOffset 初始值应为 0', () => {
@@ -121,6 +120,43 @@ describe('board/fixture', () => {
         it('旬首应为非空字符串', () => {
           expect(meta.xunHead).toBeTruthy()
           expect(meta.xunHeadGan).toBeTruthy()
+        })
+      })
+    }
+  })
+
+  describe('buildBoard 精确值回归验证', () => {
+    for (const fixture of FIXTURE_CASES) {
+      describe(fixture.description, () => {
+        const { palaces, meta } = buildBoard({
+          datetime: fixture.datetime,
+          type: 'hour',
+        })
+
+        it('meta 精确值', () => {
+          expect(meta.juNumber).toBe(fixture.expectedMeta.juNumber)
+          expect(meta.xunHead).toBe(fixture.expectedMeta.xunHead)
+          expect(meta.xunHeadGan).toBe(fixture.expectedMeta.xunHeadGan)
+          expect(meta.ganZhi).toBe(fixture.expectedMeta.ganZhi)
+          expect(meta.solarTerm).toBe(fixture.expectedMeta.solarTerm)
+          expect(meta.yinyang).toBe(fixture.expectedMeta.yinyang)
+        })
+
+        it('每宫精确值', () => {
+          expect(fixture.expectedPalaces).toHaveLength(9)
+          for (let i = 0; i < 9; i++) {
+            const actual = palaces[i]
+            const expected = fixture.expectedPalaces[i]
+            expect(actual.groundGan, `宫 ${i} groundGan`).toBe(expected.groundGan)
+            expect(actual.groundExtraGan, `宫 ${i} groundExtraGan`).toBe(expected.groundExtraGan)
+            expect(actual.skyGan, `宫 ${i} skyGan`).toBe(expected.skyGan)
+            expect(actual.skyExtraGan, `宫 ${i} skyExtraGan`).toBe(expected.skyExtraGan)
+            expect(actual.star?.name ?? null, `宫 ${i} star`).toBe(expected.star)
+            expect(actual.door?.name ?? null, `宫 ${i} door`).toBe(expected.door)
+            expect(actual.god?.name ?? null, `宫 ${i} god`).toBe(expected.god)
+            expect(actual.outGan, `宫 ${i} outGan`).toBe(expected.outGan)
+            expect(actual.outExtraGan, `宫 ${i} outExtraGan`).toBe(expected.outExtraGan)
+          }
         })
       })
     }
