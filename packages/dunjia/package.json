@@ -5,10 +5,10 @@
   "description": "奇门遁甲排盘计算库 - 时家奇门与山向奇门",
   "author": "",
   "license": "MIT",
-  "homepage": "https://github.com/gkn1234/shouxing-lunar#readme",
+  "homepage": "https://github.com/yihai-js/yihai-bagua#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gkn1234/shouxing-lunar.git",
+    "url": "https://github.com/yihai-js/yihai-bagua.git",
     "directory": "packages/dunjia"
   },
   "keywords": [
