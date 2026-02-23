@@ -33,7 +33,19 @@
 | 测试位置 | `tests/` 目录，文件名 `*.test.ts`，镜像 `src/` 结构 |
 | 测试框架 | Vitest (`globals: true`，无需显式 import `describe`/`it`) |
 
-## 4. 代码模式示例参考
+## 4. 依赖管理原则
+
+按类别分层，全局共享工具放根 workspace，与包产物直接相关的依赖留在子包：
+
+| 层级 | 依赖 | 说明 |
+|---|---|---|
+| **根 workspace** | `typescript`, `vite`, `vitest`, `@vitest/coverage-v8`, `eslint`, `@antfu/eslint-config` | 构建工具、测试框架、代码质量工具，所有子包共享同一版本 |
+| **子包** | `@types/node`, `vite-plugin-dts` | 类型声明和构建插件，直接影响包的 `.d.ts` 产物，不同包可能需要不同版本 |
+| **子包** | runtime `dependencies` | 如 `@yhjs/lunar: workspace:*`，仅声明运行时依赖 |
+
+**原则：** 添加新依赖时，构建/测试/lint 工具加到根 `package.json`；类型声明、构建插件、运行时依赖加到子包 `package.json`。
+
+## 5. 代码模式示例参考
 
 - **私有构造器 + 静态工厂:** `packages/dunjia/src/board/time-dunjia.ts:15-30`, `packages/dunjia/src/board/pos-dunjia.ts:52-76`
 - **readonly + Object.freeze:** `packages/dunjia/src/board/pos-dunjia.ts:52-72`
