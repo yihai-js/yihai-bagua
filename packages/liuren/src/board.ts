@@ -1,10 +1,10 @@
 import type { LiurenBoard, LiurenOptions } from './types'
-import { dateToJd, resolveYuejiang, initPalaces, setTianpan } from './yuejiang'
-import { resolveGuiGodType, setGuiGods } from './guigod'
-import { setOuterGan } from './outer'
-import { computeLegend, isFuyin } from './legend'
 import { computeDestiny } from './destiny'
+import { resolveGuiGodType, setGuiGods } from './guigod'
+import { computeLegend, isFuyin } from './legend'
+import { setOuterGan } from './outer'
 import { computeFourPillars } from './pillar'
+import { dateToJd, initPalaces, resolveYuejiang, setTianpan } from './yuejiang'
 
 /**
  * 大六壬排盘流水线

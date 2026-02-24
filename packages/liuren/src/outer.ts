@@ -1,6 +1,6 @@
 import type { GanZhi, Zhi } from '@yhjs/bagua'
-import { gan } from '@yhjs/bagua'
 import type { ZhiPalace } from './types'
+import { gan } from '@yhjs/bagua'
 
 /* ------------------------------------------------------------------ */
 /*  setOuterGan — 外天干排布（六壬式排天干）                              */

@@ -1,21 +1,10 @@
-export type {
-  GuiGodType,
-  GuiGodInfo,
-  ZhiPalace,
-  LegendResult,
-  DestinyResult,
-  LiurenMeta,
-  LiurenOptions,
-  LiurenBoard,
-} from './types'
+export {
+  buildLiurenBoard,
+} from './board'
 
 export {
-  YUEJIANG_NAMES,
-  dateToJd,
-  resolveYuejiang,
-  initPalaces,
-  setTianpan,
-} from './yuejiang'
+  computeDestiny,
+} from './destiny'
 
 export {
   GUI_GOD_NAMES,
@@ -26,20 +15,31 @@ export {
 } from './guigod'
 
 export {
-  setOuterGan,
-} from './outer'
-
-export {
-  GAN_JIGONG,
-  XING_TABLE,
-  isFuyin,
   computeLegend,
+  GAN_JIGONG,
+  isFuyin,
+  XING_TABLE,
 } from './legend'
 
 export {
-  computeDestiny,
-} from './destiny'
+  setOuterGan,
+} from './outer'
+
+export type {
+  DestinyResult,
+  GuiGodInfo,
+  GuiGodType,
+  LegendResult,
+  LiurenBoard,
+  LiurenMeta,
+  LiurenOptions,
+  ZhiPalace,
+} from './types'
 
 export {
-  buildLiurenBoard,
-} from './board'
+  dateToJd,
+  initPalaces,
+  resolveYuejiang,
+  setTianpan,
+  YUEJIANG_NAMES,
+} from './yuejiang'

@@ -1,6 +1,6 @@
 import type { GanZhi } from '@yhjs/bagua'
-import { zhi } from '@yhjs/bagua'
 import type { LegendResult, ZhiPalace } from './types'
+import { zhi } from '@yhjs/bagua'
 
 /* ------------------------------------------------------------------ */
 /*  数据表                                                              */

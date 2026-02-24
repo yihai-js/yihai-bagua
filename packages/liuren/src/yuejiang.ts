@@ -1,11 +1,11 @@
 import type { Zhi } from '@yhjs/bagua'
+import type { ZhiPalace } from './types'
 import { zhi } from '@yhjs/bagua'
 import {
   calculateLunarYear,
   gregorianToJD,
   J2000,
 } from '@yhjs/lunar'
-import type { ZhiPalace } from './types'
 
 /* ------------------------------------------------------------------ */
 /*  月将名称常量                                                        */
