@@ -23,3 +23,7 @@ export {
   resolveGuiGodType,
   setGuiGods,
 } from './guigod'
+
+export {
+  setOuterGan,
+} from './outer'
