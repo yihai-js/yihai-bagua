@@ -31,6 +31,7 @@ export {
 
 // 干支计算 - 类型导出
 export type { FullGanZhiInfo, GanZhiInfo } from './gan-zhi'
+export type { GanZhi } from '@yhjs/bagua'
 
 // 干支计算
 export {

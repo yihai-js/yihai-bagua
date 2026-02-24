@@ -62,31 +62,31 @@ describe('干支计算 (gan-zhi)', () => {
   describe('getGanZhi - 索引转干支', () => {
     it('索引0应返回甲子', () => {
       const result = getGanZhi(0)
-      expect(result.gan).toBe('甲')
-      expect(result.zhi).toBe('子')
-      expect(result.ganZhi).toBe('甲子')
-      expect(result.ganIndex).toBe(0)
-      expect(result.zhiIndex).toBe(0)
+      expect(result.gan.name).toBe('甲')
+      expect(result.zhi.name).toBe('子')
+      expect(result.name).toBe('甲子')
+      expect(result.gan.index).toBe(0)
+      expect(result.zhi.index).toBe(0)
     })
 
     it('索引1应返回乙丑', () => {
       const result = getGanZhi(1)
-      expect(result.ganZhi).toBe('乙丑')
+      expect(result.name).toBe('乙丑')
     })
 
     it('索引59应返回癸亥', () => {
       const result = getGanZhi(59)
-      expect(result.ganZhi).toBe('癸亥')
+      expect(result.name).toBe('癸亥')
     })
 
     it('索引60应循环回甲子', () => {
       const result = getGanZhi(60)
-      expect(result.ganZhi).toBe('甲子')
+      expect(result.name).toBe('甲子')
     })
 
     it('负数索引应正确处理', () => {
       const result = getGanZhi(-1)
-      expect(result.ganZhi).toBe('癸亥')
+      expect(result.name).toBe('癸亥')
     })
   })
 
@@ -95,27 +95,27 @@ describe('干支计算 (gan-zhi)', () => {
       // 2024年立春后
       const jd = gregorianToJD(2024, 2, 10) - J2000
       const result = getYearGanZhi(jd)
-      expect(result.ganZhi).toBe('甲辰')
+      expect(result.name).toBe('甲辰')
     })
 
     it('2024年1月应仍是癸卯年', () => {
       // 2024年立春前
       const jd = gregorianToJD(2024, 1, 15) - J2000
       const result = getYearGanZhi(jd)
-      expect(result.ganZhi).toBe('癸卯')
+      expect(result.name).toBe('癸卯')
     })
 
     it('2023年应是癸卯年', () => {
       const jd = gregorianToJD(2023, 6, 15) - J2000
       const result = getYearGanZhi(jd)
-      expect(result.ganZhi).toBe('癸卯')
+      expect(result.name).toBe('癸卯')
     })
 
     it('1984年应是甲子年', () => {
       // 1984年是甲子年
       const jd = gregorianToJD(1984, 6, 15) - J2000
       const result = getYearGanZhi(jd)
-      expect(result.ganZhi).toBe('甲子')
+      expect(result.name).toBe('甲子')
     })
   })
 
@@ -124,14 +124,14 @@ describe('干支计算 (gan-zhi)', () => {
       // 2024年春节
       const jd = gregorianToJD(2024, 2, 10) - J2000
       const result = getYearGanZhiBySpring(jd)
-      expect(result.ganZhi).toBe('甲辰')
+      expect(result.name).toBe('甲辰')
     })
 
     it('2024年1月应是癸卯年', () => {
       // 2024年春节前一个多月
       const jd = gregorianToJD(2024, 1, 1) - J2000
       const result = getYearGanZhiBySpring(jd)
-      expect(result.ganZhi).toBe('癸卯')
+      expect(result.name).toBe('癸卯')
     })
   })
 
@@ -139,9 +139,9 @@ describe('干支计算 (gan-zhi)', () => {
     it('应返回有效的干支', () => {
       const jd = gregorianToJD(2024, 6, 15) - J2000
       const result = getMonthGanZhi(jd)
-      expect(result.ganZhi.length).toBe(2)
-      expect(TIAN_GAN).toContain(result.gan)
-      expect(DI_ZHI).toContain(result.zhi)
+      expect(result.name.length).toBe(2)
+      expect(TIAN_GAN).toContain(result.gan.name)
+      expect(DI_ZHI).toContain(result.zhi.name)
     })
   })
 
@@ -154,8 +154,8 @@ describe('干支计算 (gan-zhi)', () => {
       const result3 = getDayGanZhi(jd1 + 2)
 
       // 索引应该连续递增
-      expect(result2.ganIndex).toBe((result1.ganIndex + 1) % 10)
-      expect(result3.ganIndex).toBe((result1.ganIndex + 2) % 10)
+      expect(result2.gan.index).toBe((result1.gan.index + 1) % 10)
+      expect(result3.gan.index).toBe((result1.gan.index + 2) % 10)
     })
 
     it('60天后应循环回原干支', () => {
@@ -163,7 +163,7 @@ describe('干支计算 (gan-zhi)', () => {
       const jd2 = jd1 + 60
       const result1 = getDayGanZhi(jd1)
       const result2 = getDayGanZhi(jd2)
-      expect(result1.ganZhi).toBe(result2.ganZhi)
+      expect(result1.name).toBe(result2.name)
     })
   })
 
@@ -171,9 +171,9 @@ describe('干支计算 (gan-zhi)', () => {
     it('应返回有效的干支', () => {
       const jd = gregorianToJD(2024, 6, 15) - J2000
       const result = getHourGanZhi(jd)
-      expect(result.ganZhi.length).toBe(2)
-      expect(TIAN_GAN).toContain(result.gan)
-      expect(DI_ZHI).toContain(result.zhi)
+      expect(result.name.length).toBe(2)
+      expect(TIAN_GAN).toContain(result.gan.name)
+      expect(DI_ZHI).toContain(result.zhi.name)
     })
   })
 

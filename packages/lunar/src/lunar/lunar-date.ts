@@ -302,27 +302,27 @@ export class LunarDate {
 
   /** 干支纪年（立春为界） */
   ganZhiYear(): string {
-    return getYearGanZhi(this._jd).ganZhi
+    return getYearGanZhi(this._jd).name
   }
 
   /** 干支纪年（正月初一为界） */
   ganZhiYearBySpring(): string {
-    return getYearGanZhiBySpring(this._jd).ganZhi
+    return getYearGanZhiBySpring(this._jd).name
   }
 
   /** 干支纪月 */
   ganZhiMonth(): string {
-    return getMonthGanZhi(this._jd).ganZhi
+    return getMonthGanZhi(this._jd).name
   }
 
   /** 干支纪日 */
   ganZhiDay(): string {
-    return getDayGanZhi(this._jd).ganZhi
+    return getDayGanZhi(this._jd).name
   }
 
   /** 干支纪时 */
   ganZhiHour(): string {
-    return getHourGanZhi(this._jd).ganZhi
+    return getHourGanZhi(this._jd).name
   }
 
   /** 生肖 */

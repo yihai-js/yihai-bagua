@@ -80,6 +80,9 @@
     "benchmark": "vitest run tests/performance/benchmark.test.ts",
     "prepublishOnly": "npm run build"
   },
+  "dependencies": {
+    "@yhjs/bagua": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^25.0.9",
     "vite-plugin-dts": "^4.5.4"

@@ -248,35 +248,35 @@ describe('干支基础数据验证', () => {
 describe('getGanZhi - 索引转干支', () => {
   it('索引 0 应返回甲子', () => {
     const result = getGanZhi(0)
-    expect(result.ganZhi).toBe('甲子')
-    expect(result.ganIndex).toBe(0)
-    expect(result.zhiIndex).toBe(0)
+    expect(result.name).toBe('甲子')
+    expect(result.gan.index).toBe(0)
+    expect(result.zhi.index).toBe(0)
   })
 
   it('索引 1 应返回乙丑', () => {
     const result = getGanZhi(1)
-    expect(result.ganZhi).toBe('乙丑')
+    expect(result.name).toBe('乙丑')
   })
 
   it('索引 59 应返回癸亥', () => {
     const result = getGanZhi(59)
-    expect(result.ganZhi).toBe('癸亥')
+    expect(result.name).toBe('癸亥')
   })
 
   it('索引 60 应返回甲子（周期性）', () => {
     const result = getGanZhi(60)
-    expect(result.ganZhi).toBe('甲子')
+    expect(result.name).toBe('甲子')
   })
 
   it('负索引应正确处理', () => {
     const result = getGanZhi(-1)
-    expect(result.ganZhi).toBe('癸亥')
+    expect(result.name).toBe('癸亥')
   })
 
   it('所有 60 个索引应与标准表一致', () => {
     for (let i = 0; i < 60; i++) {
       const result = getGanZhi(i)
-      expect(result.ganZhi).toBe(STANDARD_JIA_ZI[i])
+      expect(result.name).toBe(STANDARD_JIA_ZI[i])
     }
   })
 })
@@ -322,16 +322,16 @@ describe('干支纪年验证 - 标准参考值', () => {
         // 使用年中日期，确保在立春之后
         const jd = yearToJd(year, 6, 15)
         const result = getYearGanZhi(jd)
-        expect(result.ganZhi).toBe(ganZhi)
+        expect(result.name).toBe(ganZhi)
       })
     })
 
     it('1984年为甲子年基准验证', () => {
       const jd = yearToJd(1984, 6, 15)
       const result = getYearGanZhi(jd)
-      expect(result.ganZhi).toBe('甲子')
-      expect(result.ganIndex).toBe(0)
-      expect(result.zhiIndex).toBe(0)
+      expect(result.name).toBe('甲子')
+      expect(result.gan.index).toBe(0)
+      expect(result.zhi.index).toBe(0)
     })
 
     it('连续年份干支应连续', () => {
@@ -342,8 +342,8 @@ describe('干支纪年验证 - 标准参考值', () => {
         const result1 = getYearGanZhi(jd1)
         const result2 = getYearGanZhi(jd2)
 
-        const expected = getGanZhi(ganZhiToIndex(result1.ganZhi) + 1)
-        expect(result2.ganZhi).toBe(expected.ganZhi)
+        const expected = getGanZhi(ganZhiToIndex(result1.name) + 1)
+        expect(result2.name).toBe(expected.name)
       }
     })
   })
@@ -371,14 +371,14 @@ describe('干支纪月验证 - 标准参考值', () => {
       it(`${year}年${month}月${day}日应为${ganZhi}月`, () => {
         const jd = dateToJd(year, month, day)
         const result = getMonthGanZhi(jd)
-        expect(result.ganZhi).toBe(ganZhi)
+        expect(result.name).toBe(ganZhi)
       })
     })
 
     it('1998年12月7日为甲子月基准验证', () => {
       const jd = dateToJd(1998, 12, 7)
       const result = getMonthGanZhi(jd)
-      expect(result.ganZhi).toBe('甲子')
+      expect(result.name).toBe('甲子')
     })
 
     it('连续月份干支应连续', () => {
@@ -391,7 +391,7 @@ describe('干支纪月验证 - 标准参考值', () => {
         const result = getMonthGanZhi(jd)
 
         // 验证干支有效
-        const index = ganZhiToIndex(result.ganZhi)
+        const index = ganZhiToIndex(result.name)
         expect(index).toBeGreaterThanOrEqual(0)
         expect(index).toBeLessThan(60)
 
@@ -415,16 +415,16 @@ describe('干支纪日验证 - 标准参考值', () => {
       it(`${year}年${month}月${day}日应为${ganZhi}日`, () => {
         const jd = dateToJd(year, month, day)
         const result = getDayGanZhi(jd)
-        expect(result.ganZhi).toBe(ganZhi)
+        expect(result.name).toBe(ganZhi)
       })
     })
 
     it('2000年1月7日为甲子日基准验证', () => {
       const jd = dateToJd(2000, 1, 7)
       const result = getDayGanZhi(jd)
-      expect(result.ganZhi).toBe('甲子')
-      expect(result.ganIndex).toBe(0)
-      expect(result.zhiIndex).toBe(0)
+      expect(result.name).toBe('甲子')
+      expect(result.gan.index).toBe(0)
+      expect(result.zhi.index).toBe(0)
     })
 
     it('连续日期干支应连续', () => {
@@ -433,7 +433,7 @@ describe('干支纪日验证 - 标准参考值', () => {
       for (let i = 0; i < 60; i++) {
         const jd = startJd + i
         const result = getDayGanZhi(jd)
-        expect(result.ganZhi).toBe(STANDARD_JIA_ZI[i])
+        expect(result.name).toBe(STANDARD_JIA_ZI[i])
       }
     })
 
@@ -444,7 +444,7 @@ describe('干支纪日验证 - 标准参考值', () => {
       const result1 = getDayGanZhi(jd1)
       const result2 = getDayGanZhi(jd2)
 
-      expect(result1.ganZhi).toBe(result2.ganZhi)
+      expect(result1.name).toBe(result2.name)
     })
   })
 })
@@ -455,13 +455,13 @@ describe('干支纪时验证', () => {
       // 测试当天 23:30
       const jd = dateToJd(2000, 1, 7) + (23.5 / 24 - 0.5)
       const result = getHourGanZhi(jd)
-      expect(result.zhi).toBe('子')
+      expect(result.zhi.name).toBe('子')
     })
 
     it('午时（11:00-13:00）应为午', () => {
       const jd = dateToJd(2000, 1, 7) + (12 / 24 - 0.5)
       const result = getHourGanZhi(jd)
-      expect(result.zhi).toBe('午')
+      expect(result.zhi.name).toBe('午')
     })
 
     it('日干不同时时干也不同', () => {
@@ -477,11 +477,11 @@ describe('干支纪时验证', () => {
       const result2 = getHourGanZhi(jd2)
 
       // 子时地支相同
-      expect(result1.zhi).toBe('子')
-      expect(result2.zhi).toBe('子')
+      expect(result1.zhi.name).toBe('子')
+      expect(result2.zhi.name).toBe('子')
 
       // 但天干不同
-      expect(result1.gan).not.toBe(result2.gan)
+      expect(result1.gan.name).not.toBe(result2.gan.name)
     })
   })
 })
@@ -540,7 +540,7 @@ describe('完整干支信息', () => {
       const result = getFullGanZhi(jd)
 
       // 2000年为庚辰年（龙年）
-      expect(result.year.ganZhi).toBe('庚辰')
+      expect(result.year.name).toBe('庚辰')
       expect(result.shengXiao).toBe('龙')
     })
   })
@@ -554,7 +554,7 @@ describe('干支周期性验证', () => {
     const result1 = getYearGanZhi(jd1)
     const result2 = getYearGanZhi(jd2)
 
-    expect(result1.ganZhi).toBe(result2.ganZhi)
+    expect(result1.name).toBe(result2.name)
   })
 
   it('干支纪日 60 日一周期', () => {
@@ -564,7 +564,7 @@ describe('干支周期性验证', () => {
     const result1 = getDayGanZhi(jd1)
     const result2 = getDayGanZhi(jd2)
 
-    expect(result1.ganZhi).toBe(result2.ganZhi)
+    expect(result1.name).toBe(result2.name)
   })
 
   it('干支纪月 60 月（5年）一周期', () => {
@@ -575,7 +575,7 @@ describe('干支周期性验证', () => {
     const result1 = getMonthGanZhi(jd1)
     const result2 = getMonthGanZhi(jd2)
 
-    expect(result1.ganZhi).toBe(result2.ganZhi)
+    expect(result1.name).toBe(result2.name)
   })
 })
 
@@ -584,18 +584,18 @@ describe('历史日期干支验证', () => {
     const jd = yearToJd(-500, 6, 15)
     const result = getYearGanZhi(jd)
 
-    expect(result.ganZhi).toBeDefined()
-    expect(result.ganZhi.length).toBe(2)
-    expect(TIAN_GAN).toContain(result.gan)
-    expect(DI_ZHI).toContain(result.zhi)
+    expect(result.name).toBeDefined()
+    expect(result.name.length).toBe(2)
+    expect(TIAN_GAN).toContain(result.gan.name)
+    expect(DI_ZHI).toContain(result.zhi.name)
   })
 
   it('远古日期干支应有效', () => {
     const jd = yearToJd(-2000, 6, 15)
     const result = getFullGanZhi(jd)
 
-    expect(result.year.ganZhi.length).toBe(2)
-    expect(result.day.ganZhi.length).toBe(2)
+    expect(result.year.name.length).toBe(2)
+    expect(result.day.name.length).toBe(2)
     expect(result.shengXiao.length).toBe(1)
   })
 
@@ -603,8 +603,8 @@ describe('历史日期干支验证', () => {
     const jd = yearToJd(3000, 6, 15)
     const result = getFullGanZhi(jd)
 
-    expect(result.year.ganZhi.length).toBe(2)
-    expect(result.day.ganZhi.length).toBe(2)
+    expect(result.year.name.length).toBe(2)
+    expect(result.day.name.length).toBe(2)
   })
 })
 
@@ -614,7 +614,7 @@ describe('边界条件测试', () => {
     const result = getDayGanZhi(0)
 
     // 2000年1月1日为戊午日
-    expect(result.ganZhi).toBe('戊午')
+    expect(result.name).toBe('戊午')
   })
 
   it('除夕到春节的干支变化', () => {
@@ -626,20 +626,20 @@ describe('边界条件测试', () => {
     const dayAfter = getDayGanZhi(chunjie)
 
     // 连续日期
-    const expectedAfter = getGanZhi(ganZhiToIndex(dayBefore.ganZhi) + 1)
-    expect(dayAfter.ganZhi).toBe(expectedAfter.ganZhi)
+    const expectedAfter = getGanZhi(ganZhiToIndex(dayBefore.name) + 1)
+    expect(dayAfter.name).toBe(expectedAfter.name)
   })
 
   it('闰年和平年的干支应正确', () => {
     // 2024年是闰年
     const leap = yearToJd(2024, 6, 15)
     const leapResult = getYearGanZhi(leap)
-    expect(leapResult.ganZhi).toBe('甲辰')
+    expect(leapResult.name).toBe('甲辰')
 
     // 2023年是平年
     const normal = yearToJd(2023, 6, 15)
     const normalResult = getYearGanZhi(normal)
-    expect(normalResult.ganZhi).toBe('癸卯')
+    expect(normalResult.name).toBe('癸卯')
   })
 })
 
@@ -654,8 +654,8 @@ describe('干支与节气关系验证', () => {
     const result2024 = getYearGanZhi(year2024Mid)
 
     // 2023年为癸卯年，2024年为甲辰年
-    expect(result2023.ganZhi).toBe('癸卯')
-    expect(result2024.ganZhi).toBe('甲辰')
+    expect(result2023.name).toBe('癸卯')
+    expect(result2024.name).toBe('甲辰')
   })
 
   it('节气交接时月干支变化', () => {
@@ -668,7 +668,7 @@ describe('干支与节气关系验证', () => {
 
     // 月干支应在节气交接时变化
     // 验证两个日期返回有效的干支
-    expect(result1.ganZhi.length).toBe(2)
-    expect(result2.ganZhi.length).toBe(2)
+    expect(result1.name.length).toBe(2)
+    expect(result2.name.length).toBe(2)
   })
 })

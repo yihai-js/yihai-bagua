@@ -9,6 +9,11 @@ export default defineConfig({
       include: ['src/**/*.ts'],
     }),
   ],
+  resolve: {
+    alias: {
+      '@yhjs/bagua': resolve(__dirname, '../bagua/src'),
+    },
+  },
   build: {
     lib: {
       entry: {
@@ -28,6 +33,7 @@ export default defineConfig({
       },
     },
     rollupOptions: {
+      external: [/@yhjs\/bagua/],
       output: {
         exports: 'named',
       },

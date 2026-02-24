@@ -1,6 +1,12 @@
+import { resolve } from 'node:path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@yhjs/bagua': resolve(__dirname, '../bagua/src'),
+    },
+  },
   test: {
     globals: true,
     include: ['tests/**/*.test.ts'],
