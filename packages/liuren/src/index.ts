@@ -27,3 +27,10 @@ export {
 export {
   setOuterGan,
 } from './outer'
+
+export {
+  GAN_JIGONG,
+  XING_TABLE,
+  isFuyin,
+  computeLegend,
+} from './legend'
