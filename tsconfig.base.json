@@ -6,7 +6,8 @@
     "moduleResolution": "bundler",
     "paths": {
       "@yhjs/lunar": ["./packages/lunar/src"],
-      "@yhjs/lunar/*": ["./packages/lunar/src/*"]
+      "@yhjs/lunar/*": ["./packages/lunar/src/*"],
+      "@yhjs/bagua": ["./packages/bagua/src"]
     },
     "resolveJsonModule": true,
     "strict": true,

@@ -1,0 +1,48 @@
+{
+  "name": "@yhjs/bagua",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "术数基础库 - 干支、五行、十神、关系引擎",
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/yihai-js/yihai-bagua#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yihai-js/yihai-bagua.git",
+    "directory": "packages/bagua"
+  },
+  "keywords": [
+    "bagua",
+    "ganzhi",
+    "wuxing",
+    "干支",
+    "五行",
+    "八卦",
+    "十神",
+    "术数"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "engines": { "node": ">=16.0.0" },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
