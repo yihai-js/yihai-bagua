@@ -1,6 +1,6 @@
+import { ganZhi, zhi } from '@yhjs/bagua'
 import { describe, expect, it } from 'vitest'
 import { buildLiurenBoard } from '../src/board'
-import { ganZhi, zhi } from '@yhjs/bagua'
 
 describe('liuren E2E', () => {
   describe('1985-03-15 14:00 癸丑 (非伏吟)', () => {
@@ -24,7 +24,12 @@ describe('liuren E2E', () => {
         expect(p.tianpan).toBeDefined()
         expect(p.guiGod).not.toBeNull()
         expect(p.outerGan).not.toBeNull()
+        expect(p.jianChu).not.toBeNull()
+        expect(p.twelvePalace).not.toBeNull()
       }
+      // 太阴只标记一个宫位
+      const taiyinCount = board.palaces.filter(p => p.taiyin).length
+      expect(taiyinCount).toBe(1)
     })
 
     it('tianpan should follow yuejiang=亥 hourZhi=未 mapping', () => {
@@ -35,6 +40,27 @@ describe('liuren E2E', () => {
     it('legend should be 巳酉丑 / 巳酉丑', () => {
       expect(board.legend.ganLegend.map(z => z.name)).toEqual(['巳', '酉', '丑'])
       expect(board.legend.zhiLegend.map(z => z.name)).toEqual(['巳', '酉', '丑'])
+    })
+
+    it('jianChu should start from keyZhi=丑', () => {
+      // keyZhi=丑(1) → 丑=建, 寅=除, ...
+      expect(board.palaces[1].jianChu).toBe('建')
+      expect(board.palaces[2].jianChu).toBe('除')
+      expect(board.palaces[0].jianChu).toBe('闭')
+    })
+
+    it('twelvePalace should be set for all palaces', () => {
+      const palaceNames = board.palaces.map(p => p.twelvePalace)
+      expect(palaceNames.filter(n => n !== null)).toHaveLength(12)
+      expect(palaceNames).toContain('命')
+      expect(palaceNames).toContain('父母')
+    })
+
+    it('taiyin should mark exactly one palace', () => {
+      const taiyinPalaces = board.palaces.filter(p => p.taiyin)
+      expect(taiyinPalaces).toHaveLength(1)
+      // 1985-03-15 农历正月廿六 → TAIYIN_TABLE[26]=11 → 亥
+      expect(taiyinPalaces[0].zhi.name).toBe('亥')
     })
 
     it('destiny should have time=未 destiny=亥', () => {
@@ -63,6 +89,15 @@ describe('liuren E2E', () => {
       expect(board.legend.ganLegend[0].name).toBe('辰')
       expect(board.legend.ganLegend[1].name).toBe('戌')
       expect(board.legend.ganLegend[2].name).toBe('未')
+    })
+
+    it('jianChu/twelvePalace/taiyin should be set in 伏吟', () => {
+      // keyZhi=巳(5) → 巳=建
+      expect(board.palaces[5].jianChu).toBe('建')
+      // 所有宫都应有十二宫标记
+      expect(board.palaces.every(p => p.twelvePalace !== null)).toBe(true)
+      // 太阴只标记一宫
+      expect(board.palaces.filter(p => p.taiyin).length).toBe(1)
     })
   })
 

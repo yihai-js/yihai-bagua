@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import { computeDestiny } from '../src/destiny'
-import { buildLiurenBoard } from '../src/board'
 import { ganZhi, zhi } from '@yhjs/bagua'
+import { describe, expect, it } from 'vitest'
+import { buildLiurenBoard } from '../src/board'
+import { computeDestiny } from '../src/destiny'
 
 describe('destiny', () => {
   it('should compute time/destiny/live', () => {
@@ -33,6 +33,9 @@ describe('buildLiurenBoard', () => {
     expect(board.palaces[0].tianpan.name).toBe('辰')
     expect(board.palaces.every(p => p.guiGod !== null)).toBe(true)
     expect(board.palaces.every(p => p.outerGan !== null)).toBe(true)
+    expect(board.palaces.every(p => p.jianChu !== null)).toBe(true)
+    expect(board.palaces.every(p => p.twelvePalace !== null)).toBe(true)
+    expect(board.palaces.filter(p => p.taiyin).length).toBe(1)
     expect(board.legend.ganLegend[0].name).toBe('巳')
     expect(board.legend.ganLegend[1].name).toBe('酉')
     expect(board.legend.ganLegend[2].name).toBe('丑')
