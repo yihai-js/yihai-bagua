@@ -8,7 +8,8 @@
       "@yhjs/lunar": ["./packages/lunar/src"],
       "@yhjs/lunar/*": ["./packages/lunar/src/*"],
       "@yhjs/bagua": ["./packages/bagua/src"],
-      "@yhjs/bazi": ["./packages/bazi/src"]
+      "@yhjs/bazi": ["./packages/bazi/src"],
+      "@yhjs/liuren": ["./packages/liuren/src"]
     },
     "resolveJsonModule": true,
     "strict": true,
