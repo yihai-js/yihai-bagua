@@ -1,6 +1,6 @@
 # @yhjs/monorepo LLM 文档索引
 
-`@yhjs/monorepo` 是一个 pnpm monorepo，包含 `@yhjs/lunar`（农历天文计算）和 `@yhjs/dunjia`（奇门遁甲排盘）两个 TypeScript 库，为"承明 AI"玄学计算后端提供核心算法支持。
+`@yhjs/monorepo` 是一个 pnpm monorepo，包含 `@yhjs/lunar`（农历天文计算）、`@yhjs/bagua`（术数基础）、`@yhjs/dunjia`（奇门遁甲排盘）、`@yhjs/bazi`（八字排盘）和 `@yhjs/liuren`（大六壬排盘）五个 TypeScript 库，为"承明 AI"玄学计算后端提供核心算法支持。
 
 ---
 
@@ -10,8 +10,10 @@
 
 | 文档 | 描述 |
 |------|------|
-| `overview/project-overview.md` | 项目全局概览：monorepo 结构、两个核心包（lunar/dunjia）的功能定位、技术栈、包间依赖、目录结构、遗留代码来源 |
+| `overview/project-overview.md` | 项目全局概览：monorepo 结构、五个核心包（lunar/bagua/dunjia/bazi/liuren）的功能定位、技术栈、包间依赖、目录结构、遗留代码来源 |
 | `overview/lunar-package-overview.md` | `@yhjs/lunar` 包概览：六个子模块（core/data/ephemeris/lunar/eclipse/astronomy）的职责划分、模块依赖链、关键技术特征 |
+| `overview/bazi-package-overview.md` | `@yhjs/bazi` 包概览：六个子模块（types/pillar/analysis/dayun/liunian/shensha）的职责划分、依赖 lunar+bagua、关键技术特征 |
+| `overview/liuren-package-overview.md` | `@yhjs/liuren` 包概览：八个子模块（types/yuejiang/guigod/outer/legend/destiny/pillar/board）的职责划分、13步排盘流水线、依赖 lunar+bagua、关键技术特征 |
 
 ---
 
@@ -53,4 +55,4 @@
 
 ---
 
-*共 13 篇文档。最后更新: 2026-02-23。*
+*共 15 篇文档。最后更新: 2026-02-25。*

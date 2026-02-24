@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest'
 import { gan, zhi } from '@yhjs/bagua'
+import { describe, expect, it } from 'vitest'
 import { GUI_GOD_NAMES, resolveGuiGodType, setGuiGods } from '../src/guigod'
 import { initPalaces, setTianpan } from '../src/yuejiang'
 
 describe('guigod', () => {
-  describe('GUI_GOD_NAMES', () => {
+  describe('gUI_GOD_NAMES', () => {
     it('should have 12 entries', () => {
       expect(GUI_GOD_NAMES).toHaveLength(12)
       expect(GUI_GOD_NAMES[0]).toBe('贵人')

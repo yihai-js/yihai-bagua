@@ -1,16 +1,16 @@
-import { describe, expect, it } from 'vitest'
 import { ganZhi, zhi } from '@yhjs/bagua'
-import { GAN_JIGONG, XING_TABLE, computeLegend, isFuyin } from '../src/legend'
+import { describe, expect, it } from 'vitest'
+import { computeLegend, GAN_JIGONG, isFuyin, XING_TABLE } from '../src/legend'
 import { initPalaces, setTianpan } from '../src/yuejiang'
 
 describe('legend', () => {
   describe('data tables', () => {
-    it('GAN_JIGONG should have 10 entries', () => {
+    it('gAN_JIGONG should have 10 entries', () => {
       expect(GAN_JIGONG).toHaveLength(10)
       expect(GAN_JIGONG[0]).toBe(2) // 甲→寅
       expect(GAN_JIGONG[9]).toBe(1) // 癸→丑
     })
-    it('XING_TABLE should have 12 entries', () => {
+    it('xING_TABLE should have 12 entries', () => {
       expect(XING_TABLE).toHaveLength(12)
       expect(XING_TABLE[0]).toBe(3) // 子→卯
       expect(XING_TABLE[4]).toBe(4) // 辰→辰(自刑)

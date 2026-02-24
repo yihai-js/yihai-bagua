@@ -45,9 +45,6 @@ describe('analysis', () => {
       const fourPillars = computeFourPillars(jd)
       const built = buildAllPillars(fourPillars)
 
-      // Verify day master
-      const dayMasterName = fourPillars.day.gan.name
-
       // 日柱 tenGod = null
       expect(built.day.tenGod).toBeNull()
 

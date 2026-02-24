@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { zhi } from '@yhjs/bagua'
+import { describe, expect, it } from 'vitest'
 import { dateToJd, initPalaces, resolveYuejiang, setTianpan } from '../src/yuejiang'
 
 describe('yuejiang', () => {

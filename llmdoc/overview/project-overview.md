@@ -7,7 +7,7 @@
 
 ## 2. 高层描述
 
-本项目是一个 pnpm monorepo，包含两个核心包：`@yhjs/lunar`（农历天文计算）和 `@yhjs/dunjia`（奇门遁甲排盘）。`@yhjs/lunar` 基于 VSOP87 (行星/太阳) 和 ELP/MPP02 (月球) 算法实现高精度天文计算、农历推算、日月食预测；`@yhjs/dunjia` 基于 lunar 的干支和节气数据实现完整的奇门遁甲排盘引擎（时家/山向奇门）。两个包均以 ESM + CJS 双格式发布，无外部运行时依赖（lunar 自包含，dunjia 仅依赖 lunar）。
+本项目是一个 pnpm monorepo，包含五个核心包：`@yhjs/lunar`（农历天文计算）、`@yhjs/bagua`（术数基础）、`@yhjs/dunjia`（奇门遁甲排盘）、`@yhjs/bazi`（八字排盘）和 `@yhjs/liuren`（大六壬排盘）。`@yhjs/lunar` 基于 VSOP87 和 ELP/MPP02 算法实现高精度天文计算、农历推算；`@yhjs/bagua` 提供五行关系、十神、六十甲子、八卦等术数基础模块；`@yhjs/dunjia` 实现奇门遁甲排盘引擎（时家/山向奇门）；`@yhjs/bazi` 实现八字排盘（四柱/大运/流年/神煞）；`@yhjs/liuren` 实现大六壬排盘（天盘/贵神/三传/时运命）。所有包以 ESM + CJS 双格式发布。
 
 ## 3. 技术栈
 
@@ -37,15 +37,39 @@
 - 内部分层：`base`(五行/八卦/九宫/旬) -> `model`(星/门/神) -> `board`(排盘流水线) + `mountain`(罗盘二十四山)
 - 关键入口：`TimeDunjia.create()`、`PosDunjia.create()`、`buildBoard()`
 
+### `@yhjs/bazi` (v0.1.0) -- 八字排盘
+
+- **运行时依赖** `@yhjs/lunar` (`workspace:*`) + `@yhjs/bagua` (`workspace:*`)
+- 1 个导出子路径 (`.`)
+- 核心功能：四柱干支计算、十神分析、藏干展开、大运 9 步排列、流年/运前流年、五虎遁流月、驿马/贵人/空亡/旺相休囚死
+- 内部分层：`pillar`(干支计算) -> `analysis`(十神/藏干) -> `dayun`(大运) + `liunian`(流年/流月) + `shensha`(神煞)
+- 关键入口：`Bazi.create({ datetime, gender })`
+
+### `@yhjs/liuren` (v0.1.0) -- 大六壬排盘
+
+- **运行时依赖** `@yhjs/lunar` (`workspace:*`) + `@yhjs/bagua` (`workspace:*`)
+- 1 个导出子路径 (`.`)
+- 核心功能：月将计算、天盘排布、十二神将(贵神)排布、外天干、十二建、十二宫、太阴标记、三传计算（含伏吟）、时运命
+- 内部分层：`yuejiang`(月将/天盘) + `pillar`(四柱) -> `guigod`(贵神) -> `outer`(外干/建/宫/太阴) -> `legend`(三传) + `destiny`(时运命) -> `board`(13步流水线)
+- 关键入口：`buildLiurenBoard(options)` 返回 `LiurenBoard`
+
 ## 5. 包间依赖
 
 ```
 @yhjs/dunjia  ──depends──>  @yhjs/lunar
+@yhjs/dunjia  ──depends──>  @yhjs/bagua (via lunar's re-exports)
+@yhjs/bazi    ──depends──>  @yhjs/lunar
+@yhjs/bazi    ──depends──>  @yhjs/bagua
+@yhjs/liuren  ──depends──>  @yhjs/lunar
+@yhjs/liuren  ──depends──>  @yhjs/bagua
 ```
 
 - `dunjia` 中唯一导入 `lunar` 的文件：`packages/dunjia/src/board/common.ts`
-- 使用的 lunar API：`gregorianToJD`, `J2000`, `calculateLunarYear`, `ganZhiToIndex`, `getYearGanZhi`, `getMonthGanZhi`, `getDayGanZhi`, `getHourGanZhi`, `SOLAR_TERM_NAMES`
-- 测试时通过 vitest alias 直接指向 lunar 源码（`../lunar/src`），绕过构建产物
+- `bazi` 导入 `lunar` 的文件：`packages/bazi/src/pillar.ts`（干支/儒略日）、`packages/bazi/src/dayun.ts`（节气数据）
+- `bazi` 导入 `bagua` 的文件：`packages/bazi/src/analysis.ts`（十神）、`packages/bazi/src/dayun.ts`（ganZhi/tenGod）、`packages/bazi/src/liunian.ts`（ganZhi/tenGod）、`packages/bazi/src/shensha.ts`（zhi）
+- `liuren` 导入 `lunar` 的文件：`packages/liuren/src/yuejiang.ts`（月将/农历/儒略日）、`packages/liuren/src/pillar.ts`（四柱干支）
+- `liuren` 导入 `bagua` 的文件：`packages/liuren/src/types.ts`（Gan/Zhi/GanZhi 类型）、`packages/liuren/src/guigod.ts`（Gan/Zhi）、`packages/liuren/src/outer.ts`（GanZhi/gan）、`packages/liuren/src/legend.ts`（GanZhi/zhi）、`packages/liuren/src/yuejiang.ts`（zhi）
+- 测试时通过 vitest alias 直接指向源码，绕过构建产物
 
 ## 6. 项目来源
 
@@ -76,14 +100,37 @@
 │   │   │   ├── astronomy/      # 用户友好型高层 API
 │   │   │   └── data/           # 城市、年号、VSOP87 系数表
 │   │   └── tests/
-│   └── dunjia/                 # @yhjs/dunjia
+│   ├── bagua/                  # @yhjs/bagua
+│   │   └── src/                # 五行、十神、六十甲子、八卦、十二长生
+│   ├── dunjia/                 # @yhjs/dunjia
+│   │   ├── src/
+│   │   │   ├── base/           # 五行、八卦、九宫拓扑、六甲旬
+│   │   │   ├── model/          # 九星、八门、八神数据
+│   │   │   ├── board/          # 排盘流水线 + TimeDunjia/PosDunjia
+│   │   │   ├── mountain/       # 罗盘二十四山、三盘、三元局数
+│   │   │   ├── outer-gods/     # 外盘神煞插件 (十二建神)
+│   │   │   └── types.ts        # 核心类型定义 (Palace, BoardMeta, etc.)
+│   │   └── tests/
+│   ├── bazi/                   # @yhjs/bazi
+│   │   ├── src/
+│   │   │   ├── types.ts        # 10 个核心类型 (Pillar, DayunEntry, etc.)
+│   │   │   ├── pillar.ts       # Date -> 四柱干支
+│   │   │   ├── analysis.ts     # 十神分析 + 藏干展开
+│   │   │   ├── dayun.ts        # 大运计算 (9步 x 10年)
+│   │   │   ├── liunian.ts      # 流年 + 五虎遁流月
+│   │   │   ├── shensha.ts      # 驿马/贵人/空亡/旺相
+│   │   │   └── bazi.ts         # Bazi 主类 (静态工厂 + 编排)
+│   │   └── tests/
+│   └── liuren/                 # @yhjs/liuren
 │       ├── src/
-│       │   ├── base/           # 五行、八卦、九宫拓扑、六甲旬
-│       │   ├── model/          # 九星、八门、八神数据
-│       │   ├── board/          # 排盘流水线 + TimeDunjia/PosDunjia
-│       │   ├── mountain/       # 罗盘二十四山、三盘、三元局数
-│       │   ├── outer-gods/     # 外盘神煞插件 (十二建神)
-│       │   └── types.ts        # 核心类型定义 (Palace, BoardMeta, etc.)
+│       │   ├── types.ts        # 8 个核心类型 (ZhiPalace, LiurenBoard, etc.)
+│       │   ├── yuejiang.ts     # 月将计算、地盘初始化、天盘排布、太阴查表
+│       │   ├── pillar.ts       # J2000 → 四柱干支
+│       │   ├── guigod.ts       # 十二神将(贵神)排布、贵人表
+│       │   ├── outer.ts        # 外天干、十二建、十二宫、太阴标记
+│       │   ├── legend.ts       # 三传计算（含伏吟/相刑/相冲）
+│       │   ├── destiny.ts      # 时运命计算
+│       │   └── board.ts        # 13 步排盘流水线 (buildLiurenBoard)
 │       └── tests/
 └── src-legacy/                 # 寿星天文历 V5.10.3 原始 JS 源码
 ```
