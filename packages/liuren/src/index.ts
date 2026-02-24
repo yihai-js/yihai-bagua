@@ -34,3 +34,11 @@ export {
   isFuyin,
   computeLegend,
 } from './legend'
+
+export {
+  computeDestiny,
+} from './destiny'
+
+export {
+  buildLiurenBoard,
+} from './board'
