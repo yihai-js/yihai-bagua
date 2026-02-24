@@ -22,7 +22,12 @@ export {
 } from './legend'
 
 export {
+  JIANCHU_NAMES,
+  setJianChu,
   setOuterGan,
+  setTaiyin,
+  setTwelvePalaces,
+  TWELVE_PALACE_NAMES,
 } from './outer'
 
 export type {
@@ -39,7 +44,10 @@ export type {
 export {
   dateToJd,
   initPalaces,
+  resolveIsSolar,
+  resolveTaiyinZhi,
   resolveYuejiang,
   setTianpan,
+  TAIYIN_TABLE,
   YUEJIANG_NAMES,
 } from './yuejiang'

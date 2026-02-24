@@ -16,6 +16,9 @@ export interface ZhiPalace {
   readonly tianpan: Zhi
   readonly guiGod: GuiGodInfo | null
   readonly outerGan: Gan | null
+  readonly jianChu: string | null
+  readonly twelvePalace: string | null
+  readonly taiyin: boolean
 }
 
 /** 三传结果 */

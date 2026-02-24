@@ -3,6 +3,7 @@ import type { ZhiPalace } from './types'
 import { zhi } from '@yhjs/bagua'
 import {
   calculateLunarYear,
+  getLunarDateInfo,
   gregorianToJD,
   J2000,
 } from '@yhjs/lunar'
@@ -86,6 +87,9 @@ export function initPalaces(): ZhiPalace[] {
       tianpan: zhi(i), // 初始天盘 = 地盘
       guiGod: null,
       outerGan: null,
+      jianChu: null,
+      twelvePalace: null,
+      taiyin: false,
     })
   }
   return palaces
@@ -123,4 +127,65 @@ export function setTianpan(
   }
 
   return result
+}
+
+/* ------------------------------------------------------------------ */
+/*  resolveIsSolar                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 太阴查询表：农历日(1~30)→ 太阴地支索引
+ * 索引 0 为占位，实际使用 1~30
+ */
+export const TAIYIN_TABLE: readonly number[] = [
+  9,
+  9,
+  8,
+  8,
+  7,
+  7,
+  7,
+  6,
+  6,
+  5,
+  5,
+  5,
+  4,
+  4,
+  3,
+  3,
+  3,
+  2,
+  2,
+  1,
+  1,
+  1,
+  0,
+  0,
+  11,
+  11,
+  11,
+  10,
+  10,
+  9,
+  9,
+]
+
+/**
+ * 判断是否为阳（冬至~夏至之间）
+ *
+ * zhongQi[0] = 冬至, zhongQi[12] = 夏至
+ */
+export function resolveIsSolar(jd: number): boolean {
+  const yearData = calculateLunarYear(jd)
+  return jd >= yearData.zhongQi[0] && jd < yearData.zhongQi[12]
+}
+
+/**
+ * 根据农历日查太阴地支
+ */
+export function resolveTaiyinZhi(jd: number): Zhi {
+  const lunarInfo = getLunarDateInfo(jd)
+  const lunarDay = lunarInfo.day // 1~30
+  return zhi(TAIYIN_TABLE[lunarDay])
 }
