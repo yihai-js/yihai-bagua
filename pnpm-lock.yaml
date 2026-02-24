@@ -38,6 +38,9 @@ importers:
 
   packages/dunjia:
     dependencies:
+      '@yhjs/bagua':
+        specifier: workspace:*
+        version: link:../bagua
       '@yhjs/lunar':
         specifier: workspace:*
         version: link:../lunar

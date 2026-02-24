@@ -5,6 +5,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@yhjs/lunar': resolve(__dirname, '../lunar/src'),
+      '@yhjs/bagua': resolve(__dirname, '../bagua/src'),
     },
   },
   test: {

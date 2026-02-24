@@ -50,6 +50,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "@yhjs/bagua": "workspace:*",
     "@yhjs/lunar": "workspace:*"
   },
   "devDependencies": {

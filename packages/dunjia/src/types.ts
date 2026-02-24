@@ -1,18 +1,8 @@
-/**
- * 五行枚举
- */
-export enum Wuxing {
-  木 = 0,
-  火 = 1,
-  土 = 2,
-  金 = 3,
-  水 = 4,
-}
+import { Wuxing } from '@yhjs/bagua'
+import type { YinYang } from '@yhjs/bagua'
 
-/**
- * 阴阳类型
- */
-export type YinYang = '阴' | '阳'
+export { Wuxing } from '@yhjs/bagua'
+export type { YinYang } from '@yhjs/bagua'
 
 /**
  * 局类型

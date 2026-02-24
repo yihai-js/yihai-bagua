@@ -219,14 +219,14 @@ export function resolveMeta(options: TimeBoardOptions): BoardMeta {
 
   // 局数
   const juNumber = calculateJuNumber(jd, type, {
-    yearZhiIndex: yearGZ.zhiIndex,
-    monthZhiIndex: monthGZ.zhiIndex,
-    dayZhiIndex: dayGZ.zhiIndex,
-    hourZhiIndex: hourGZ.zhiIndex,
+    yearZhiIndex: yearGZ.zhi.index,
+    monthZhiIndex: monthGZ.zhi.index,
+    dayZhiIndex: dayGZ.zhi.index,
+    hourZhiIndex: hourGZ.zhi.index,
   })
 
   // 旬首
-  const ganZhiIndex = ganZhiToIndex(keyGZ.ganZhi)
+  const ganZhiIndex = ganZhiToIndex(keyGZ.name)
   const xunInfo = getXunFromGanZhiIndex(ganZhiIndex)
 
   return {
@@ -236,7 +236,7 @@ export function resolveMeta(options: TimeBoardOptions): BoardMeta {
     juNumber,
     xunHead: xunInfo.name,
     xunHeadGan: xunInfo.head,
-    ganZhi: keyGZ.ganZhi,
+    ganZhi: keyGZ.name,
     solarTerm: prevTerm.name,
     moveStarOffset: 0,
   }
