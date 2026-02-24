@@ -20,6 +20,7 @@ export {
 export {
   GUI_GOD_NAMES,
   GUI_GOD_SHORT_NAMES,
+  GUIREN_TABLE,
   resolveGuiGodType,
   setGuiGods,
 } from './guigod'

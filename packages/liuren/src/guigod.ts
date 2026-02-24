@@ -20,7 +20,7 @@ export const GUI_GOD_SHORT_NAMES = [
 /**
  * 天乙贵人表：ganIndex -> [阳贵地支索引, 阴贵地支索引]
  */
-const GUIREN_TABLE: readonly (readonly [number, number])[] = [
+export const GUIREN_TABLE: readonly (readonly [number, number])[] = [
   [1, 7], // 甲 -> 丑/未
   [0, 8], // 乙 -> 子/申
   [11, 9], // 丙 -> 亥/酉
