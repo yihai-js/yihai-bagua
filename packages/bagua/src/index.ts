@@ -1,7 +1,5 @@
 // @yhjs/bagua - 术数基础库
 
-export const VERSION = '1.0.0'
-
 // 类型
 export { ganIndex, ganZhiIndex, Wuxing, WUXING_NAMES, zhiIndex } from './types'
 export type { GanIndex, GanZhiIndex, YinYang, ZhiIndex } from './types'
@@ -21,3 +19,11 @@ export { twelveState, TWELVE_STATE_NAMES } from './twelve-state'
 export type { TwelveStateName } from './twelve-state'
 export { ganRelation, zhiRelation, zhiTripleRelation } from './relation'
 export type { GanRelationType, XingType, ZhiRelationResult, ZhiRelationType, ZhiTripleRelationType } from './relation'
+
+// 组合层
+export { ganZhi, ganZhiFromNames, JIA_ZI_TABLE } from './ganzhi'
+export type { GanZhi, NayinInfo } from './ganzhi'
+export { getXun, getXunFromGanZhiIndex, LIUYI_LIST, XUN_LIST, XUNS } from './xun'
+export type { XunInfo } from './xun'
+export { BAGUA_LIST, BAGUAS, compareBagua, getBagua } from './bagua'
+export type { BaguaInfo } from './bagua'
