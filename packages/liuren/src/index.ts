@@ -16,3 +16,10 @@ export {
   initPalaces,
   setTianpan,
 } from './yuejiang'
+
+export {
+  GUI_GOD_NAMES,
+  GUI_GOD_SHORT_NAMES,
+  resolveGuiGodType,
+  setGuiGods,
+} from './guigod'
