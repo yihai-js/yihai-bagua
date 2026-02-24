@@ -1,0 +1,43 @@
+{
+  "name": "@yhjs/bazi",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "八字排盘库 - 四柱/大运/流年/神煞计算",
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/yihai-js/yihai-bagua#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yihai-js/yihai-bagua.git",
+    "directory": "packages/bazi"
+  },
+  "keywords": ["bazi", "four-pillars", "八字", "四柱", "大运", "命理"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "engines": { "node": ">=16.0.0" },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@yhjs/bagua": "workspace:*",
+    "@yhjs/lunar": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
