@@ -1,7 +1,7 @@
 {
   "name": "@yhjs/dunjia",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "奇门遁甲排盘计算库 - 时家奇门与山向奇门",
   "author": "",
   "license": "MIT",
@@ -39,8 +39,12 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "engines": { "node": ">=16.0.0" },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

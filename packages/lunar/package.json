@@ -1,7 +1,7 @@
 {
   "name": "@yhjs/lunar",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "精确的中国农历与天文计算库 - 寿星万年历 TypeScript 实现",
   "author": "",
   "license": "MIT",

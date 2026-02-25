@@ -1,7 +1,7 @@
 {
   "name": "@yhjs/liuren",
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "大六壬排盘库 - 天盘/贵神/三传/时运命计算",
   "author": "",
   "license": "MIT",
@@ -11,7 +11,13 @@
     "url": "https://github.com/yihai-js/yihai-bagua.git",
     "directory": "packages/liuren"
   },
-  "keywords": ["liuren", "六壬", "大六壬", "排盘", "术数"],
+  "keywords": [
+    "liuren",
+    "六壬",
+    "大六壬",
+    "排盘",
+    "术数"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -22,8 +28,12 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "engines": { "node": ">=16.0.0" },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
